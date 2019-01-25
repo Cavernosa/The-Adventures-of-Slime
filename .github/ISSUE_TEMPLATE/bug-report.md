@@ -2,7 +2,7 @@
 name: Encontrei um bug
 about: Encontrou algum bug no código?
 title: 'Bug: '
-labels: ''
+labels: 'bug'
 assignees: ''
 
 ---
