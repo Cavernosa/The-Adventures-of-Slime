@@ -1,6 +1,6 @@
 ---
-name: Bug report
-about: Crie uma issue para nos ajudar a localizar bugs
+name: Encontrei um bug
+about: Encontrou algum bug no código?
 title: 'Bug: '
 labels: ''
 assignees: ''
