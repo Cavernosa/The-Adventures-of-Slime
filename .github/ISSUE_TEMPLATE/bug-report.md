@@ -3,7 +3,7 @@ name: Encontrei um bug
 about: Encontrou algum bug no código?
 title: 'Bug: '
 labels: 'bug'
-assignees: ''
+assignees: 'Mateus-Hirt'
 
 ---
 
