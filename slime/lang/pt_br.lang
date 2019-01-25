@@ -1,0 +1,12 @@
+"sim": "Sim",
+"nao": "Não",
+"menu_jogar": "JOGAR",
+"menu_configuracoes": "CONFIGURAÇÕES",
+"menu_sair": "SAIR",
+"config_musica": "Música",
+"config_efeitos_sonoros": "Efeitos sonoros",
+"selpersonagem_selecao_de_personagem": "SELEÇÃO DE PERSONAGEM",
+"tutorial_1": "Movimente o slime usando WASD",
+"tutorial_2": "ou as SETAS DIRECIONAIS.",
+"tutorial_3": "Colete os pontos vermelhos",
+"tutorial_4": "para aumentar sua pontuação."
