@@ -11,12 +11,12 @@ programa
 	inclua biblioteca Objetos --> o
 	inclua biblioteca Matematica --> mt
 
-	// Configurações de jogo
-	cadeia configuracoes_lingua = "Português (BR)"
+	// ConfiguraÃ§Ãµes de jogo
+	cadeia configuracoes_lingua = "PortuguÃªs (BR)"
 	logico configuracoes_musica = falso,
 	configuracoes_efeitos_sonoros = verdadeiro
 	
-	// Configurações
+	// ConfiguraÃ§Ãµes
 	inteiro janela[] = {800, 600},
 	lar = janela[0],
 	alt = janela[1],
@@ -39,7 +39,7 @@ programa
 		"Goop",
 		"Slurry"
 	},
-	pasta_jogo = u.obter_diretorio_usuario() + "/game",
+	pasta_jogo = u.obter_diretorio_usuario() + "/slime",
 	pasta_sprites = pasta_jogo + "/sprites",
 	pasta_fonts = pasta_jogo + "/fonts",
 	pasta_pontos = pasta_jogo + "/points",
@@ -99,7 +99,7 @@ programa
 	
 	funcao inicio()
 	{
-		// Inicia o modo gráfico e define as dimensões da janela
+		// Inicia o modo grÃ¡fico e define as dimensÃµes da janela
 		g.iniciar_modo_grafico(falso)
 		g.definir_dimensoes_janela(janela[0], janela[1])
 		g.definir_icone_janela(g.carregar_imagem(pasta_config + "/icon.png"))
@@ -111,7 +111,7 @@ programa
 
 		definir_posicao_inimigo(1, "fantasma_cinza")
 		
-		// Loop responsável por fazer o programa funcionar
+		// Loop responsÃ¡vel por fazer o programa funcionar
 		enquanto(executando){
 			// Detecta se o jogador apertou SHIFT + ESC, para finalizar o loop
 			se(t.tecla_pressionada(t.TECLA_ESC) e t.tecla_pressionada(t.TECLA_SHIFT)){
@@ -126,31 +126,31 @@ programa
 			g.definir_cor(janela_cor_fundo)
 			g.limpar()
 			
-			// Esta é a tela de menu
+			// Esta Ã© a tela de menu
 			se(tela_atual == 0){
 				menu()
 			}
 			
-			// Esta é a tela de configurações
+			// Esta Ã© a tela de configuraÃ§Ãµes
 			senao se(tela_atual == 1){
 				configuracoes()
 			}
 			
-			// Esta é a tela de selação de personagem
+			// Esta Ã© a tela de selaÃ§Ã£o de personagem
 			senao se(tela_atual == 2){
 				selecao_de_personagem()
 			}
 			
-			// Esta é a tela de jogo
+			// Esta Ã© a tela de jogo
 			senao se(tela_atual == 3){
 				jogo()
 			}
 
-			// Detecta se o jogador apertou uma determinada tecla que tenha uma função específica
+			// Detecta se o jogador apertou uma determinada tecla que tenha uma funÃ§Ã£o especÃ­fica
 			funcoes_teclado()
 			
 			// Renderiza os desenhos; 
-			// [!] O "se(executando)" serve para não ocorrer um erro, quando o jogador apertar SHIFT + ESC
+			// [!] O "se(executando)" serve para nÃ£o ocorrer um erro, quando o jogador apertar SHIFT + ESC
 			se(executando){
 				g.renderizar()
 			}
@@ -222,28 +222,28 @@ programa
 		}
 	}
 	funcao menu(){
-		// Define a cor do texto dos botôes
+		// Define a cor do texto dos botÃ´es
 		g.definir_cor(janela_cor_fundo_interface)
 		
-		// Desenha o botão de jogar
+		// Desenha o botÃ£o de jogar
 		g.desenhar_imagem(lar / 2 - 75, alt / 2, menu_play_button)
 		cadeia texto_play = json("menu_jogar")
 		g.desenhar_texto((lar / 2) - (g.altura_texto("A") * tx.numero_caracteres(texto_play)) / 2,
 		lar / 2 - 82 + g.altura_imagem(menu_play_button), texto_play)
 
-		// Desenha o botão de configurações
+		// Desenha o botÃ£o de configuraÃ§Ãµes
 		g.desenhar_imagem(lar / 4 - 75, alt / 2 + 45, menu_config_button)
 		cadeia texto_config = json("menu_configuracoes")
 		g.desenhar_texto((lar / 4 - 32) - (g.altura_texto("A") * tx.numero_caracteres(texto_config)) / 2,
 		lar / 2 - 38 + g.altura_imagem(menu_config_button), texto_config)
 
-		// Desenha o botão de sair
+		// Desenha o botÃ£o de sair
 		g.desenhar_imagem(lar / 2 + lar / 4 - 32, alt / 2 + 45, menu_quit_button)
 		cadeia texto_quit = json("menu_sair")
 		g.desenhar_texto((lar / 2 + lar / 4 + 15) - (g.altura_texto("A") * tx.numero_caracteres(texto_quit)) / 2,
 		lar / 2 - 38 + g.altura_imagem(menu_quit_button), texto_quit)
 
-		// Detecta se o jogador selecionou um botão do menu
+		// Detecta se o jogador selecionou um botÃ£o do menu
 		detectar_se_jogador_selecionou_botao_menu()
 	}
 	funcao selecao_de_personagem(){
@@ -251,12 +251,12 @@ programa
 		slime_azul = g.carregar_imagem(pasta_jogo + "/menus/slimes/slime_azul.png"),
 		slime_laranja = g.carregar_imagem(pasta_jogo + "/menus/slimes/slime_laranja.png")
 
-		// Escreve "Seleção de personagem"
+		// Escreve "SeleÃ§Ã£o de personagem"
 		g.definir_cor(0xffffff)
 		g.definir_tamanho_texto(25.0)
 		centralizar_texto(25, json("selpersonagem_selecao_de_personagem"))
 
-		// Desenha as divisões de cada personagem
+		// Desenha as divisÃµes de cada personagem
 		para(inteiro q = 1; q - 1 < 3; q++){
 			g.definir_cor(janela_cor_fundo_interface)
 			g.desenhar_retangulo((q * selecao_de_personagem_divisao_entre_retangulo) + ((q - 1) * selecao_de_personagem_largura_ratangulo),
@@ -273,14 +273,14 @@ programa
 
 		// Escreve o nome dos personagens
 		para(inteiro q = 1; q - 1 < 3; q++){
-			// Variável que vai auxiliar na hora de desenhar o texto
+			// VariÃ¡vel que vai auxiliar na hora de desenhar o texto
 			inteiro x = (q * selecao_de_personagem_divisao_entre_retangulo) + ((q - 1) * selecao_de_personagem_largura_ratangulo) + 10
 
 			// Define o tamanho e a cor do texto
 			g.definir_tamanho_texto(18.0)
 			g.definir_cor(janela_cor_fundo)
 
-			// Desenha o texto centralizado do nome do personagem(faz a média do tamanho do quadrado e centraliz o texto apartir deste valor)
+			// Desenha o texto centralizado do nome do personagem(faz a mÃ©dia do tamanho do quadrado e centraliz o texto apartir deste valor)
 			g.desenhar_texto((x + (x + selecao_de_personagem_largura_ratangulo - 20)) / 2 - (g.altura_texto("A") * tx.numero_caracteres(nome_personagem[q - 1])) / 2,
 			selecao_de_personagem_posicao_y_retangulo + 10 + 190, nome_personagem[q - 1])
 		}
@@ -288,7 +288,7 @@ programa
 		// Detecta se o jogador selecionou um personagem
 		detectar_se_jogador_selecionou_personagem()
 		
-		// Libera as imagens, para não ocorrer um estouro de memória
+		// Libera as imagens, para nÃ£o ocorrer um estouro de memÃ³ria
 		g.liberar_imagem(slime_verde)
 		g.liberar_imagem(slime_azul)
 		g.liberar_imagem(slime_laranja)
@@ -296,19 +296,19 @@ programa
 	funcao detectar_se_jogador_selecionou_botao_menu(){
 		inteiro x = m.posicao_x(), y = m.posicao_y()
 		se(m.botao_pressionado(m.BOTAO_ESQUERDO)){
-			// Clique no botão de jogar
+			// Clique no botÃ£o de jogar
 			se(x > lar / 2 - 75 e x < lar / 2 - 75 + g.largura_imagem(menu_play_button) e
 			y > alt / 2 e y < alt / 2 + g.altura_imagem(menu_play_button)){
 				tela_atual = 2
 			}
 
-			// Clique no botão de configurações
+			// Clique no botÃ£o de configuraÃ§Ãµes
 			se(x > lar / 4 - 75 e x < lar / 4 - 75 + g.largura_imagem(menu_config_button) e
 			y > alt / 2 + 45 e y < alt / 2 + 45 + g.altura_imagem(menu_config_button)){
 				tela_atual = 1
 			}
 
-			// Clique no botão de sair
+			// Clique no botÃ£o de sair
 			se(x > lar / 2 + lar / 4 - 32 e x < lar / 2 + lar / 4 - 32 + g.largura_imagem(menu_quit_button) e
 			y > alt / 2 + 45 e y < alt / 2 + 45 + g.altura_imagem(menu_quit_button)){
 				finalizar()
@@ -346,27 +346,27 @@ programa
 		enquanto(m.algum_botao_pressionado()){}
 	}
 	funcao jogo(){		
-		// Sorteia uma nova posição do ponto, caso necessário
+		// Sorteia uma nova posiÃ§Ã£o do ponto, caso necessÃ¡rio
 		se(sortear_nova_posicao_ponto){
 			sortear_nova_posicao_ponto = falso
 			sortear_posicao_ponto()
 		}
 			
-		// Funções referentes a eventos
+		// FunÃ§Ãµes referentes a eventos
 		detectar_se_jogador_pegou_ponto()
 			
-		// Funções referentes a movimentação
+		// FunÃ§Ãµes referentes a movimentaÃ§Ã£o
 		movimento_jogador()
 		movimento_inimigo(1)
 		detectar_colisao_com_a_janela()
 		
-		// Funções referentes a desenhos
+		// FunÃ§Ãµes referentes a desenhos
 		desenhar_ponto()
 		desenhar_inimigo(1)
 		desenhar_jogador()
 		desenhar_interface()
 		
-		// Inicia o tutorial, caso ainda não tenha sido iniciado
+		// Inicia o tutorial, caso ainda nÃ£o tenha sido iniciado
 		se(exibir_tutorial){
 			tutorial()
 		}
@@ -376,24 +376,24 @@ programa
 		g.definir_tamanho_texto(20.0)
 		centralizar_texto((alt / 4) / 4, json("menu_configuracoes"))
 
-		// Desenha o botão de voltar
+		// Desenha o botÃ£o de voltar
 		g.definir_cor(janela_cor_fundo_interface)
 		g.desenhar_retangulo(lar - 60, 10, 50, 27, falso, verdadeiro)
 		g.definir_cor(janela_cor_conteudo_interface)
 		g.definir_tamanho_texto(25.0)
 		g.desenhar_texto(lar - 45, 12, ">")
 
-		// Desenha os textos de configuração
+		// Desenha os textos de configuraÃ§Ã£o
 		g.definir_cor(janela_cor_fundo_interface)
 		g.definir_tamanho_texto(12.0)
 		inteiro x = 25
 
-		// Língua
-		g.desenhar_texto(x, alt / 4, "Língua / language")
+		// LÃ­ngua
+		g.desenhar_texto(x, alt / 4, "LÃ­ngua / language")
 		g.desenhar_texto((lar - x) - (tx.numero_caracteres(configuracoes_lingua) * g.altura_texto("A")),
 		alt / 4, configuracoes_lingua)
 
-		// Música
+		// MÃºsica
 		g.desenhar_texto(x, alt / 4 + g.altura_texto("A") * 2, o.obter_propriedade_tipo_cadeia(lingua_escolhida(), "config_musica"))
 		se(configuracoes_musica == falso){
 			g.desenhar_texto((lar - x) - (tx.numero_caracteres(json("nao")) * g.altura_texto("A")),
@@ -416,27 +416,27 @@ programa
 		}
 
 		escolha(detectar_se_jogador_selecionou_botao_configuracoes()){
-			// Botão de voltar ao menu
+			// BotÃ£o de voltar ao menu
 			caso 0:
 				tela_atual = 0
 				pare
 			
-			// Botão de escolha de idioma
+			// BotÃ£o de escolha de idioma
 			caso 1:
-				se(configuracoes_lingua == "Português (BR)"){
+				se(configuracoes_lingua == "PortuguÃªs (BR)"){
 					configuracoes_lingua = "English (US)"
 				}
 				senao{
-					configuracoes_lingua = "Português (BR)"
+					configuracoes_lingua = "PortuguÃªs (BR)"
 				}
 				pare
 
-			// Botão de música
+			// BotÃ£o de mÃºsica
 			caso 2:
 				configuracoes_musica = nao configuracoes_musica
 				pare
 
-			// Botão de efeitos sonoros
+			// BotÃ£o de efeitos sonoros
 			caso 3:
 				configuracoes_efeitos_sonoros = nao configuracoes_efeitos_sonoros
 				pare
@@ -447,31 +447,31 @@ programa
 		inteiro botao_pressionado = -1
 
 		se(m.botao_pressionado(m.BOTAO_ESQUERDO)){
-			// Botão de voltar ao menu
+			// BotÃ£o de voltar ao menu
 			se(x > lar - 60 e x < lar - 60 + 50 e y > 10 e y < 10 + 27){
 				botao_pressionado = 0
 			}
 
-			// Botão de escolha de idioma
+			// BotÃ£o de escolha de idioma
 			se(y > alt / 4 e y < alt / 4 + g.altura_texto("A")){
 				botao_pressionado = 1
 			}
 			
-			// Botão de música
+			// BotÃ£o de mÃºsica
 			se(y > alt / 4 + g.altura_texto("A") * 2 e y < alt / 4 + g.altura_texto("A") * 3){
 				botao_pressionado = 2
 			}
 			
-			// Botão de efeitos sonoros
+			// BotÃ£o de efeitos sonoros
 			se(y > alt / 4 + g.altura_texto("A") * 4 e y < alt / 4 + g.altura_texto("A") * 5){
 				botao_pressionado = 3
 			}
 
-			// Loop que evita excessiovos cliques do jogador no mesmo botão
+			// Loop que evita excessiovos cliques do jogador no mesmo botÃ£o
 			enquanto(m.algum_botao_pressionado()){}
 		}
 		
-		// Retorna um número equivalente a um botão da tela de configurações
+		// Retorna um nÃºmero equivalente a um botÃ£o da tela de configuraÃ§Ãµes
 		retorne botao_pressionado
 	}
 	funcao erro_arquivos(){
@@ -484,9 +484,9 @@ programa
 		// Escreve os textos informativos
 		g.definir_cor(janela_cor_fundo_interface)
 		centralizar_texto(alt / 4, "[!] FALHA NO CARREGAMENTO DOS ARQUIVOS DO JOGO [!]")
-		centralizar_texto(alt / 2 - g.altura_texto("A") / 2, "Parece que há alguns arquivos faltando na pasta do jogo.")
-		centralizar_texto(alt / 2 - g.altura_texto("A") / 2 + g.altura_texto("A") * 4, "1. Verifique se não mudou o diretório de alguma pasta ou arquivo;")
-		centralizar_texto(alt / 2 - g.altura_texto("A") / 2 + g.altura_texto("A") * 6, "2. Verifique se não está faltando nenhuma pasta ou arquivo;")
+		centralizar_texto(alt / 2 - g.altura_texto("A") / 2, "Parece que hÃ¡ alguns arquivos faltando na pasta do jogo.")
+		centralizar_texto(alt / 2 - g.altura_texto("A") / 2 + g.altura_texto("A") * 4, "1. Verifique se nÃ£o mudou o diretÃ³rio de alguma pasta ou arquivo;")
+		centralizar_texto(alt / 2 - g.altura_texto("A") / 2 + g.altura_texto("A") * 6, "2. Verifique se nÃ£o estÃ¡ faltando nenhuma pasta ou arquivo;")
 		centralizar_texto(alt / 2 - g.altura_texto("A") / 2 + g.altura_texto("A") * 8, "3. Reinicie o jogo, pode ser que tenha ocorrido um bug.")
 		centralizar_texto(alt / 2 - g.altura_texto("A") / 2 + g.altura_texto("A") * 12, "Pressione SHIFT + ESC para finalizar e verificar os arquivos.")
 		centralizar_texto(alt / 2 - g.altura_texto("A") / 2 + g.altura_texto("A") * 14, "Pasta do jogo: " + pasta_jogo)
@@ -498,7 +498,7 @@ programa
 		executando = falso
 	}
 	funcao sortear_posicao_ponto(){
-		// Sorteia uma nova possição para o ponto
+		// Sorteia uma nova possiÃ§Ã£o para o ponto
 		inteiro sorteio_x = sorteia(0, lar - ponto_tamanho), sorteio_y = sorteia(25, alt - ponto_tamanho)
 		ponto_posicao[0] = sorteio_x
 		ponto_posicao[1] = sorteio_y
@@ -538,7 +538,7 @@ programa
 			enquanto(t.alguma_tecla_pressionada()){}
 		}
 
-		// Reseta o jogo atual e vai para a seleção de personagens
+		// Reseta o jogo atual e vai para a seleÃ§Ã£o de personagens
 		se(tela_atual == 3 e t.tecla_pressionada(t.TECLA_R)){
 			pontuacao = 0
 			jogador_posicao[0] = (lar / 2) - (jogador_tamanho[0] / 2)
@@ -587,10 +587,10 @@ programa
 		}
 	}
 	funcao detectar_se_jogador_pegou_ponto(){
-		// Variáveis que serão usadas para detectar se o jogador está realmente em cima do ponto
+		// VariÃ¡veis que serÃ£o usadas para detectar se o jogador estÃ¡ realmente em cima do ponto
 		logico x = falso, y = falso
 		
-		// Detecta se o jogador está em cima do ponto
+		// Detecta se o jogador estÃ¡ em cima do ponto
 		para(inteiro c = ponto_posicao[0]; c < ponto_posicao[0] + ponto_tamanho; c++){
 			para(inteiro d = jogador_posicao[0]; d < jogador_posicao[0] + jogador_tamanho[0]; d++){
 				se(d == c){
@@ -606,11 +606,11 @@ programa
 			}
 		}
 		
-		// Caso o jogador esteja em cima do ponto, a pontuação aumenta e uma nova posição do ponto é sorteada
+		// Caso o jogador esteja em cima do ponto, a pontuaÃ§Ã£o aumenta e uma nova posiÃ§Ã£o do ponto Ã© sorteada
 		se(x e y){
 			pontuacao++
 			
-			// Reseta a pontuação do jogador quando ele atinge um valor maior que 999 pontos
+			// Reseta a pontuaÃ§Ã£o do jogador quando ele atinge um valor maior que 999 pontos
 			se(pontuacao > 999){
 				pontuacao = 0
 			}
@@ -619,11 +619,11 @@ programa
 		}
 	}
 	funcao desenhar_interface(){
-		// Desenha o retângulo de fundo
+		// Desenha o retÃ¢ngulo de fundo
 		g.definir_cor(janela_cor_fundo_interface)
 		g.desenhar_retangulo(0, 0, lar, 25, falso, verdadeiro)
 
-		// Define a cor do conteúdo a ser desenhado na interface
+		// Define a cor do conteÃºdo a ser desenhado na interface
 		g.definir_cor(janela_cor_conteudo_interface)
 
 		// Desenhos da interface
@@ -632,7 +632,7 @@ programa
 		interface_desenhar_fps()
 	}
 	funcao cadeia interface_obter_tempo(){		
-		// Obtem um tempo para servir de base na primeira vez que a função é executada
+		// Obtem um tempo para servir de base na primeira vez que a funÃ§Ã£o Ã© executada
 		se(contador_tempo_obter_tempo){
 			contador_tempo_inicio = u.tempo_decorrido()
 			contador_tempo_obter_tempo = falso
@@ -657,7 +657,7 @@ programa
 	funcao interface_desenhar_pontuacao(){
 		cadeia pontos = pontuacao + "", maior_pontos = maior_pontuacao + ""
 		
-		// Coloca 0(zero(s)) na frente das pontuações, caso as pontuações forem menores que 100 e/ou 10
+		// Coloca 0(zero(s)) na frente das pontuaÃ§Ãµes, caso as pontuaÃ§Ãµes forem menores que 100 e/ou 10
 		se(pontuacao < 100 e pontuacao < 10){
 			pontos = "00" + pontos
 		}
@@ -671,7 +671,7 @@ programa
 			maior_pontos = "0" + maior_pontos
 		}
 		
-		// Desenha a pontuação e a maior pontuação do jogador
+		// Desenha a pontuaÃ§Ã£o e a maior pontuaÃ§Ã£o do jogador
 		g.definir_tamanho_texto(14.0)
 		se(pontuacao < maior_pontuacao){
 			g.desenhar_texto(10, 7, pontos + " | " + maior_pontos)
@@ -680,13 +680,13 @@ programa
 			g.desenhar_texto(10, 7, pontos)
 		}
 
-		// Atualiza a maior pontuação, caso necessario
+		// Atualiza a maior pontuaÃ§Ã£o, caso necessario
 		interface_atualizar_maior_pontuacao()
 	}
 	funcao interface_desenhar_fps(){
 		cadeia fps = fps_atual + ""
 
-		// Põe zeros(0) na frente do fps, caso ele for menor que 100 e/ou 10
+		// PÃµe zeros(0) na frente do fps, caso ele for menor que 100 e/ou 10
 		se(fps_atual < 10){
 			fps = "00" + fps
 		}
@@ -716,11 +716,11 @@ programa
 		g.definir_fonte_texto("Press Start 2P")
 	}
 	funcao carregar_arquivos(){
-		// Carrega o arquivo de configurações
+		// Carrega o arquivo de configuraÃ§Ãµes
 		se(a.arquivo_existe(pasta_config + "/config.config")){
 			arq_config = a.abrir_arquivo(pasta_config + "/config.config", a.MODO_LEITURA)
 
-			// Lê se o tutorial já foi exibido
+			// LÃª se o tutorial jÃ¡ foi exibido
 			cadeia linha = a.ler_linha(arq_config)
 			se(linha == "tutorial_exibido: false;"){
 				exibir_tutorial = verdadeiro
@@ -730,9 +730,9 @@ programa
 			erro_arquivos()
 		}
 
-		// Carrega o arquivo de pontuações
+		// Carrega o arquivo de pontuaÃ§Ãµes
 		se(a.arquivo_existe(pasta_config + "/pontuacao.config")){
-			// Lê o arquivo de pontuação e passa o código json para uma variável
+			// LÃª o arquivo de pontuaÃ§Ã£o e passa o cÃ³digo json para uma variÃ¡vel
 			arq_pontuacao = a.abrir_arquivo(pasta_config + "/pontuacao.config", a.MODO_LEITURA)
 			cadeia json_pontuacao = ""
 			enquanto(nao a.fim_arquivo(arq_pontuacao)){
@@ -774,7 +774,7 @@ programa
 		}
 	}
 	funcao tutorial(){
-		// Exibe o texto do tutorial até que o jogador colete um ponto
+		// Exibe o texto do tutorial atÃ© que o jogador colete um ponto
 		se(pontuacao == 0){
 			g.definir_cor(0xffffff)
 			g.definir_tamanho_texto(14.0)
@@ -794,7 +794,7 @@ programa
 			// Atualiza a variavel
 			maior_pontuacao = pontuacao
 			
-			// Atualiza a nova pontuação no arquivo
+			// Atualiza a nova pontuaÃ§Ã£o no arquivo
 			cadeia maior_pontos = maior_pontuacao + ""
 			se(maior_pontuacao < 100 e maior_pontuacao < 10){
 				maior_pontos = "00" + maior_pontos
@@ -811,13 +811,13 @@ programa
 		// Aumenta a taxa de fps
 		fps_taxa++
 
-		// Obtem o tempo atual, quando necessário
+		// Obtem o tempo atual, quando necessÃ¡rio
 		se(fps_obter_tempo){
 			fps_tempo_inicio = u.tempo_decorrido()
 			fps_obter_tempo = falso
 		}
 
-		// Detecta se já se passou 1 segundo desde a obtenção do tempo atual
+		// Detecta se jÃ¡ se passou 1 segundo desde a obtenÃ§Ã£o do tempo atual
 		se((u.tempo_decorrido() - fps_tempo_inicio) / 1000 >= 1){
 			fps_atual = fps_taxa
 			fps_taxa = 0
@@ -830,7 +830,7 @@ programa
 		g.desenhar_texto(x, y, texto)
 	}
 	funcao inteiro lingua_escolhida(){
-		se(configuracoes_lingua == "Português (BR)"){
+		se(configuracoes_lingua == "PortuguÃªs (BR)"){
 			retorne lang_pt_br
 		}
 		senao se(configuracoes_lingua == "English (US)"){
@@ -846,8 +846,8 @@ programa
 }
 /* $$$ Portugol Studio $$$ 
  * 
- * Esta seção do arquivo guarda informações do Portugol Studio.
- * Você pode apagá-la se estiver utilizando outro editor.
+ * Esta seÃ§Ã£o do arquivo guarda informaÃ§Ãµes do Portugol Studio.
+ * VocÃª pode apagÃ¡-la se estiver utilizando outro editor.
  * 
  * @POSICAO-CURSOR = 4195; 
  * @DOBRAMENTO-CODIGO = [36, 75, 79, 116, 129, 134, 139, 144, 153, 114, 99, 158, 167, 171, 165, 176, 180, 189, 183, 195, 201, 205, 210, 213, 216, 219, 204, 223, 259, 274, 248, 300, 306, 312, 297, 295, 326, 331, 336, 325, 324, 320, 349, 369, 347, 397, 401, 408, 412, 425, 428, 417, 373, 450, 455, 460, 465, 448, 444, 476, 499, 506, 509, 513, 516, 520, 523, 505, 530, 541, 556, 528, 575, 578, 581, 584, 573, 595, 594, 593, 602, 601, 600, 613, 609, 588, 620, 635, 642, 649, 633, 660, 663, 666, 669, 675, 678, 656, 689, 692, 685, 701, 707, 712, 724, 719, 728, 737, 733, 743, 753, 759, 748, 764, 768, 717, 777, 787, 775, 798, 801, 792, 791, 814, 820, 809, 826, 832, 835, 838, 831, 842];
