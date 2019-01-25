@@ -10,6 +10,7 @@ programa
 	inclua biblioteca Tipos --> tp
 	inclua biblioteca Objetos --> o
 	inclua biblioteca Matematica --> mt
+	inclua biblioteca Sons --> s
 
 	// Configurações de jogo
 	cadeia configuracoes_lingua = "Português (BR)"
@@ -45,7 +46,8 @@ programa
 	pasta_pontos = pasta_jogo + "/points",
 	pasta_menus = pasta_jogo + "/menus",
 	pasta_config = pasta_jogo + "/config",
-	pasta_lang = pasta_jogo + "/lang"
+	pasta_lang = pasta_jogo + "/lang",
+	pasta_sons = pasta_jogo + "/sons"
 	
 	logico contador_tempo_obter_tempo = verdadeiro,
 	fps_obter_tempo = verdadeiro,
@@ -68,6 +70,9 @@ programa
 	menu_config_button = 0,
 	menu_quit_button = 0,
 	sprite_fantasma_cinza = 0
+
+	// Sons
+	inteiro som_button_click = 0
 
 	// Jogador
 	cadeia jogador_cor = "verde"
@@ -105,6 +110,7 @@ programa
 		g.definir_icone_janela(g.carregar_imagem(pasta_config + "/icon.png"))
 
 		// Carrega os arquivos
+		carregar_sons()
 		carregar_fontes()
 		carregar_imagens()
 		carregar_arquivos()
@@ -440,6 +446,9 @@ programa
 			caso 3:
 				configuracoes_efeitos_sonoros = nao configuracoes_efeitos_sonoros
 				pare
+
+			caso contrario:
+				pare
 		}
 	}
 	funcao inteiro detectar_se_jogador_selecionou_botao_configuracoes(){
@@ -449,21 +458,25 @@ programa
 		se(m.botao_pressionado(m.BOTAO_ESQUERDO)){
 			// Botão de voltar ao menu
 			se(x > lar - 60 e x < lar - 60 + 50 e y > 10 e y < 10 + 27){
+				s.reproduzir_som(som_button_click, falso)
 				botao_pressionado = 0
 			}
 
 			// Botão de escolha de idioma
 			se(y > alt / 4 e y < alt / 4 + g.altura_texto("A")){
+				s.reproduzir_som(som_button_click, falso)
 				botao_pressionado = 1
 			}
 			
 			// Botão de música
 			se(y > alt / 4 + g.altura_texto("A") * 2 e y < alt / 4 + g.altura_texto("A") * 3){
+				s.reproduzir_som(som_button_click, falso)
 				botao_pressionado = 2
 			}
 			
 			// Botão de efeitos sonoros
 			se(y > alt / 4 + g.altura_texto("A") * 4 e y < alt / 4 + g.altura_texto("A") * 5){
+				s.reproduzir_som(som_button_click, falso)
 				botao_pressionado = 3
 			}
 
@@ -773,6 +786,9 @@ programa
 			a.fechar_arquivo(en_us)
 		}
 	}
+	funcao carregar_sons(){
+		som_button_click = s.carregar_som(pasta_sons + "/sfx/button_click.mp3")
+	}
 	funcao tutorial(){
 		// Exibe o texto do tutorial até que o jogador colete um ponto
 		se(pontuacao == 0){
@@ -844,15 +860,3 @@ programa
 		retorne o.obter_propriedade_tipo_cadeia(lingua_escolhida(), propriedade)
 	}
 }
-/* $$$ Portugol Studio $$$ 
- * 
- * Esta seção do arquivo guarda informações do Portugol Studio.
- * Você pode apagá-la se estiver utilizando outro editor.
- * 
- * @POSICAO-CURSOR = 4195; 
- * @DOBRAMENTO-CODIGO = [36, 75, 79, 116, 129, 134, 139, 144, 153, 114, 99, 158, 167, 171, 165, 176, 180, 189, 183, 195, 201, 205, 210, 213, 216, 219, 204, 223, 259, 274, 248, 300, 306, 312, 297, 295, 326, 331, 336, 325, 324, 320, 349, 369, 347, 397, 401, 408, 412, 425, 428, 417, 373, 450, 455, 460, 465, 448, 444, 476, 499, 506, 509, 513, 516, 520, 523, 505, 530, 541, 556, 528, 575, 578, 581, 584, 573, 595, 594, 593, 602, 601, 600, 613, 609, 588, 620, 635, 642, 649, 633, 660, 663, 666, 669, 675, 678, 656, 689, 692, 685, 701, 707, 712, 724, 719, 728, 737, 733, 743, 753, 759, 748, 764, 768, 717, 777, 787, 775, 798, 801, 792, 791, 814, 820, 809, 826, 832, 835, 838, 831, 842];
- * @PONTOS-DE-PARADA = ;
- * @SIMBOLOS-INSPECIONADOS = ;
- * @FILTRO-ARVORE-TIPOS-DE-DADO = inteiro, real, logico, cadeia, caracter, vazio;
- * @FILTRO-ARVORE-TIPOS-DE-SIMBOLO = variavel, vetor, matriz, funcao;
- */
