@@ -1,6 +1,6 @@
 ---
 name: Sugestão
-about: Tem alma sugestão para nós?
+about: Tem alguma sugestão para nós?
 title: 'Sugestão: '
 labels: sugestão
 assignees: 'Mateus-Hirt'
