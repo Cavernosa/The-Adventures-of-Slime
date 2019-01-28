@@ -1,16 +1,15 @@
 programa
 {
-	inclua biblioteca Graficos --> g
-	inclua biblioteca Teclado --> t
-	inclua biblioteca Util --> u
-	inclua biblioteca Texto --> tx
 	inclua biblioteca Calendario --> c
-	inclua biblioteca Mouse --> m
+	inclua biblioteca Graficos --> g
 	inclua biblioteca Arquivos --> a
-	inclua biblioteca Tipos --> tp
 	inclua biblioteca Objetos --> o
-	inclua biblioteca Matematica --> mt
+	inclua biblioteca Teclado --> t
+	inclua biblioteca Texto --> tx
+	inclua biblioteca Tipos --> tp
+	inclua biblioteca Mouse --> m
 	inclua biblioteca Sons --> s
+	inclua biblioteca Util --> u
 
 	// Configurações de jogo
 	cadeia configuracoes_lingua = "Português (BR)"
@@ -101,7 +100,16 @@ programa
 	inteiro posicao_inimigos = o.criar_objeto(),
 	posicao_inimigo[numero_de_inimigos][2],
 	tipo_inimigos = o.criar_objeto_via_json("{\"inimigo_1\": \"fantasma_cinza\"}")
-	
+
+	// Funções principais
+	funcao finalizar(){
+		liberar_imagens()
+		liberar_sons()
+		g.minimizar_janela()
+		u.aguarde(100)
+		g.encerrar_modo_grafico()
+		executando = falso
+	}
 	funcao inicio()
 	{
 		// Inicia o modo gráfico e define as dimensões da janela
@@ -162,12 +170,35 @@ programa
 			}
 		}
 	}
-	funcao finalizar(){
-		liberar_imagens()
-		g.minimizar_janela()
-		u.aguarde(100)
-		g.encerrar_modo_grafico()
-		executando = falso
+
+	// Funções referentes aos desenhos
+	funcao desenhar_sprite_inimigo(cadeia tipo_do_inimigo, inteiro numero_do_inimigo, logico inimigo_virado_para_a_direita){
+		se(tipo_do_inimigo == "fantasma_cinza" e inimigo_virado_para_a_direita){
+			g.desenhar_porcao_imagem(json_inimigo_posicao(numero_do_inimigo, "x"),
+			json_inimigo_posicao(numero_do_inimigo, "y"), 0, 0,
+			g.largura_imagem(sprite_fantasma_cinza) / 2, g.altura_imagem(sprite_fantasma_cinza), sprite_fantasma_cinza)
+		}
+		senao se(tipo_do_inimigo == "fantasma_cinza" e nao inimigo_virado_para_a_direita){
+			g.desenhar_porcao_imagem(json_inimigo_posicao(numero_do_inimigo, "x"),
+			json_inimigo_posicao(numero_do_inimigo, "y"), g.largura_imagem(sprite_fantasma_cinza) / 2, 0,
+			g.largura_imagem(sprite_fantasma_cinza) / 2, g.altura_imagem(sprite_fantasma_cinza), sprite_fantasma_cinza)
+		}
+	}
+	funcao desenhar_inimigo(inteiro numero_do_inimigo){
+		desenhar_sprite_inimigo(o.obter_propriedade_tipo_cadeia(tipo_inimigos, "inimigo_" + numero_do_inimigo), numero_do_inimigo, verdadeiro)
+	}
+	funcao desenhar_interface(){
+		// Desenha o retângulo de fundo
+		g.definir_cor(janela_cor_fundo_interface)
+		g.desenhar_retangulo(0, 0, lar, 25, falso, verdadeiro)
+
+		// Define a cor do conteúdo a ser desenhado na interface
+		g.definir_cor(janela_cor_conteudo_interface)
+
+		// Desenhos da interface
+		interface_desenhar_pontuacao()
+		centralizar_texto(7, contador_tempo_minutos + ":" + interface_obter_tempo())
+		interface_desenhar_fps()
 	}
 	funcao desenhar_jogador(){		
 		// Desenha o jogador
@@ -184,74 +215,8 @@ programa
 		// Desenha o ponto
 		g.desenhar_imagem(ponto_posicao[0], ponto_posicao[1], ponto_sprite)
 	}
-	funcao desenhar_inimigo(inteiro numero_do_inimigo){
-		desenhar_sprite_inimigo(o.obter_propriedade_tipo_cadeia(tipo_inimigos, "inimigo_" + numero_do_inimigo), numero_do_inimigo, verdadeiro)
-	}
-	funcao desenhar_sprite_inimigo(cadeia tipo_do_inimigo, inteiro numero_do_inimigo, logico inimigo_virado_para_a_direita){
-		se(tipo_do_inimigo == "fantasma_cinza" e inimigo_virado_para_a_direita){
-			g.desenhar_porcao_imagem(json_inimigo_posicao(numero_do_inimigo, "x"),
-			json_inimigo_posicao(numero_do_inimigo, "y"), 0, 0,
-			g.largura_imagem(sprite_fantasma_cinza) / 2, g.altura_imagem(sprite_fantasma_cinza), sprite_fantasma_cinza)
-		}
-		senao se(tipo_do_inimigo == "fantasma_cinza" e nao inimigo_virado_para_a_direita){
-			g.desenhar_porcao_imagem(json_inimigo_posicao(numero_do_inimigo, "x"),
-			json_inimigo_posicao(numero_do_inimigo, "y"), g.largura_imagem(sprite_fantasma_cinza) / 2, 0,
-			g.largura_imagem(sprite_fantasma_cinza) / 2, g.altura_imagem(sprite_fantasma_cinza), sprite_fantasma_cinza)
-		}
-	}
-	funcao definir_posicao_inimigo(inteiro numero_do_inimigo, cadeia tipo_do_inimigo){
-		se(tipo_do_inimigo == "fantasma_cinza"){
-			o.atribuir_propriedade(posicao_inimigos, "inimigo_" + numero_do_inimigo + "_x", lar / 2 - (g.largura_imagem(sprite_fantasma_cinza) / 2) / 2)
-			o.atribuir_propriedade(posicao_inimigos, "inimigo_" + numero_do_inimigo + "_y", alt / 2 - g.altura_imagem(sprite_fantasma_cinza) / 2)
-		}
-	}
-	funcao inteiro json_inimigo_posicao(inteiro numero_do_inimigo, cadeia x_y){
-		retorne o.obter_propriedade_tipo_inteiro(posicao_inimigos, "inimigo_" + numero_do_inimigo + "_" + x_y)
-	}
-	funcao movimento_inimigo(inteiro numero_do_inimigo){
-		inteiro num[2] = {
-			json_inimigo_posicao(numero_do_inimigo, "x"),
-			json_inimigo_posicao(numero_do_inimigo, "y")
-		}
-
-		se(jogador_posicao[0] > num[0]){
-			o.atribuir_propriedade(posicao_inimigos, "inimigo_" + numero_do_inimigo + "_x", num[0] + 1)
-		}
-		senao se(jogador_posicao[0] < num[0]){
-			o.atribuir_propriedade(posicao_inimigos, "inimigo_" + numero_do_inimigo + "_x", num[0] - 1)
-		}
-		se(jogador_posicao[1] > num[1]){
-			o.atribuir_propriedade(posicao_inimigos, "inimigo_" + numero_do_inimigo + "_y", num[1] + 1)
-		}
-		senao se(jogador_posicao[1] < num[1]){
-			o.atribuir_propriedade(posicao_inimigos, "inimigo_" + numero_do_inimigo + "_y", num[1] - 1)
-		}
-	}
-	funcao menu(){
-		// Define a cor do texto dos botôes
-		g.definir_cor(janela_cor_fundo_interface)
-		
-		// Desenha o botão de jogar
-		g.desenhar_imagem(lar / 2 - 75, alt / 2, menu_play_button)
-		cadeia texto_play = lang_json("menu_jogar")
-		g.desenhar_texto((lar / 2) - (g.altura_texto("A") * tx.numero_caracteres(texto_play)) / 2,
-		lar / 2 - 82 + g.altura_imagem(menu_play_button), texto_play)
-
-		// Desenha o botão de configurações
-		g.desenhar_imagem(lar / 4 - 75, alt / 2 + 45, menu_config_button)
-		cadeia texto_config = lang_json("menu_configuracoes")
-		g.desenhar_texto((lar / 4 - 32) - (g.altura_texto("A") * tx.numero_caracteres(texto_config)) / 2,
-		lar / 2 - 38 + g.altura_imagem(menu_config_button), texto_config)
-
-		// Desenha o botão de sair
-		g.desenhar_imagem(lar / 2 + lar / 4 - 32, alt / 2 + 45, menu_quit_button)
-		cadeia texto_quit = lang_json("menu_sair")
-		g.desenhar_texto((lar / 2 + lar / 4 + 15) - (g.altura_texto("A") * tx.numero_caracteres(texto_quit)) / 2,
-		lar / 2 - 38 + g.altura_imagem(menu_quit_button), texto_quit)
-
-		// Detecta se o jogador selecionou um botão do menu
-		detectar_se_jogador_selecionou_botao_menu()
-	}
+	
+	// Funções referentes às telas
 	funcao selecao_de_personagem(){
 		inteiro slime_verde = g.carregar_imagem(pasta_jogo + "/menus/slimes/slime_verde.png"),
 		slime_azul = g.carregar_imagem(pasta_jogo + "/menus/slimes/slime_azul.png"),
@@ -298,84 +263,6 @@ programa
 		g.liberar_imagem(slime_verde)
 		g.liberar_imagem(slime_azul)
 		g.liberar_imagem(slime_laranja)
-	}
-	funcao detectar_se_jogador_selecionou_botao_menu(){
-		inteiro x = m.posicao_x(), y = m.posicao_y()
-		se(m.botao_pressionado(m.BOTAO_ESQUERDO)){
-			// Clique no botão de jogar
-			se(x > lar / 2 - 75 e x < lar / 2 - 75 + g.largura_imagem(menu_play_button) e
-			y > alt / 2 e y < alt / 2 + g.altura_imagem(menu_play_button)){
-				tela_atual = 2
-			}
-
-			// Clique no botão de configurações
-			se(x > lar / 4 - 75 e x < lar / 4 - 75 + g.largura_imagem(menu_config_button) e
-			y > alt / 2 + 45 e y < alt / 2 + 45 + g.altura_imagem(menu_config_button)){
-				tela_atual = 1
-			}
-
-			// Clique no botão de sair
-			se(x > lar / 2 + lar / 4 - 32 e x < lar / 2 + lar / 4 - 32 + g.largura_imagem(menu_quit_button) e
-			y > alt / 2 + 45 e y < alt / 2 + 45 + g.altura_imagem(menu_quit_button)){
-				finalizar()
-			}
-		}
-		
-		// Loop que evita eventuais cliques excessivos do jogador
-		enquanto(m.algum_botao_pressionado()){}
-	}
-	funcao detectar_se_jogador_selecionou_personagem(){
-		inteiro x = m.posicao_x(), y = m.posicao_y()
-
-		// Detecta se o jogador selecionou um personagem
-		se(m.botao_pressionado(m.BOTAO_ESQUERDO)){
-			se(y >= selecao_de_personagem_posicao_y_retangulo e y <= alt - (selecao_de_personagem_divisao_entre_retangulo + 8)){
-				se(x >= selecao_de_personagem_divisao_entre_retangulo e x <= selecao_de_personagem_divisao_entre_retangulo + selecao_de_personagem_largura_ratangulo){
-					jogador_cor = "verde"
-					jogador_sprite = g.carregar_imagem(pasta_sprites + "/slime_" + jogador_cor + ".png")
-					tela_atual = 3
-				}
-				se(x >= selecao_de_personagem_divisao_entre_retangulo * 2 + selecao_de_personagem_largura_ratangulo e x <= selecao_de_personagem_divisao_entre_retangulo * 2 + selecao_de_personagem_largura_ratangulo * 2){
-					jogador_cor = "azul"
-					jogador_sprite = g.carregar_imagem(pasta_sprites + "/slime_" + jogador_cor + ".png")
-					tela_atual = 3
-				}
-				se(x >= selecao_de_personagem_divisao_entre_retangulo * 3 + selecao_de_personagem_largura_ratangulo * 2 e x <= selecao_de_personagem_divisao_entre_retangulo * 3 + selecao_de_personagem_largura_ratangulo * 3){
-					jogador_cor = "laranja"
-					jogador_sprite = g.carregar_imagem(pasta_sprites + "/slime_" + jogador_cor + ".png")
-					tela_atual = 3
-				}
-			}
-		}
-
-		// Loop que evita eventuais cliques excessivos do jogador
-		enquanto(m.algum_botao_pressionado()){}
-	}
-	funcao jogo(){		
-		// Sorteia uma nova posição do ponto, caso necessário
-		se(sortear_nova_posicao_ponto){
-			sortear_nova_posicao_ponto = falso
-			sortear_posicao_ponto()
-		}
-			
-		// Funções referentes a eventos
-		detectar_se_jogador_pegou_ponto()
-			
-		// Funções referentes a movimentação
-		movimento_jogador()
-		movimento_inimigo(1)
-		detectar_colisao_com_a_janela()
-		
-		// Funções referentes a desenhos
-		desenhar_ponto()
-		desenhar_inimigo(1)
-		desenhar_jogador()
-		desenhar_interface()
-		
-		// Inicia o tutorial, caso ainda não tenha sido iniciado
-		se(exibir_tutorial){
-			tutorial()
-		}
 	}
 	funcao configuracoes(){
 		g.definir_cor(janela_cor_fundo_interface)
@@ -451,42 +338,6 @@ programa
 				pare
 		}
 	}
-	funcao inteiro detectar_se_jogador_selecionou_botao_configuracoes(){
-		inteiro x = m.posicao_x(), y = m.posicao_y()
-		inteiro botao_pressionado = -1
-
-		se(m.botao_pressionado(m.BOTAO_ESQUERDO)){
-			// Botão de voltar ao menu
-			se(x > lar - 60 e x < lar - 60 + 50 e y > 10 e y < 10 + 27){
-				s.reproduzir_som(som_button_click, falso)
-				botao_pressionado = 0
-			}
-
-			// Botão de escolha de idioma
-			se(y > alt / 4 e y < alt / 4 + g.altura_texto("A")){
-				s.reproduzir_som(som_button_click, falso)
-				botao_pressionado = 1
-			}
-			
-			// Botão de música
-			se(y > alt / 4 + g.altura_texto("A") * 2 e y < alt / 4 + g.altura_texto("A") * 3){
-				s.reproduzir_som(som_button_click, falso)
-				botao_pressionado = 2
-			}
-			
-			// Botão de efeitos sonoros
-			se(y > alt / 4 + g.altura_texto("A") * 4 e y < alt / 4 + g.altura_texto("A") * 5){
-				s.reproduzir_som(som_button_click, falso)
-				botao_pressionado = 3
-			}
-
-			// Loop que evita excessiovos cliques do jogador no mesmo botão
-			enquanto(m.algum_botao_pressionado()){}
-		}
-		
-		// Retorna um número equivalente a um botão da tela de configurações
-		retorne botao_pressionado
-	}
 	funcao erro_arquivos(){
 		erro_carregamento_arquivos = verdadeiro
 
@@ -510,11 +361,101 @@ programa
 		finalizar()
 		executando = falso
 	}
+	funcao tutorial(){
+		// Exibe o texto do tutorial até que o jogador colete um ponto
+		se(pontuacao == 0){
+			g.definir_cor(0xffffff)
+			g.definir_tamanho_texto(14.0)
+			centralizar_texto(50, lang_json("tutorial_1"))
+			centralizar_texto(50 + g.altura_texto("A") + 5, lang_json("tutorial_2"))
+			centralizar_texto(50 + (g.altura_texto("A") + 5) * 2, lang_json("tutorial_3"))
+			centralizar_texto(50 + (g.altura_texto("A") + 5) * 3, lang_json("tutorial_4"))
+		}
+
+		// Caso o jogador colete um ponto, o tutorial se finaliza
+		senao{
+			exibir_tutorial = falso
+		}
+	}
+	funcao menu(){
+		// Define a cor do texto dos botôes
+		g.definir_cor(janela_cor_fundo_interface)
+		
+		// Desenha o botão de jogar
+		g.desenhar_imagem(lar / 2 - 75, alt / 2, menu_play_button)
+		cadeia texto_play = lang_json("menu_jogar")
+		g.desenhar_texto((lar / 2) - (g.altura_texto("A") * tx.numero_caracteres(texto_play)) / 2,
+		lar / 2 - 82 + g.altura_imagem(menu_play_button), texto_play)
+
+		// Desenha o botão de configurações
+		g.desenhar_imagem(lar / 4 - 75, alt / 2 + 45, menu_config_button)
+		cadeia texto_config = lang_json("menu_configuracoes")
+		g.desenhar_texto((lar / 4 - 32) - (g.altura_texto("A") * tx.numero_caracteres(texto_config)) / 2,
+		lar / 2 - 38 + g.altura_imagem(menu_config_button), texto_config)
+
+		// Desenha o botão de sair
+		g.desenhar_imagem(lar / 2 + lar / 4 - 32, alt / 2 + 45, menu_quit_button)
+		cadeia texto_quit = lang_json("menu_sair")
+		g.desenhar_texto((lar / 2 + lar / 4 + 15) - (g.altura_texto("A") * tx.numero_caracteres(texto_quit)) / 2,
+		lar / 2 - 38 + g.altura_imagem(menu_quit_button), texto_quit)
+
+		// Detecta se o jogador selecionou um botão do menu
+		detectar_se_jogador_selecionou_botao_menu()
+	}
+	funcao jogo(){
+		// Sorteia uma nova posição do ponto, caso necessário
+		se(sortear_nova_posicao_ponto){
+			sortear_nova_posicao_ponto = falso
+			sortear_posicao_ponto()
+		}
+			
+		// Funções referentes a eventos
+		detectar_se_jogador_pegou_ponto()
+			
+		// Funções referentes a movimentação
+		movimento_jogador()
+		movimento_inimigo(1)
+		detectar_colisao_com_a_janela()
+		
+		// Funções referentes a desenhos
+		desenhar_ponto()
+		desenhar_inimigo(1)
+		desenhar_jogador()
+		desenhar_interface()
+		
+		// Inicia o tutorial, caso ainda não tenha sido iniciado
+		se(exibir_tutorial){
+			tutorial()
+		}
+	}
+
+	// Funções referentes ao ponto
 	funcao sortear_posicao_ponto(){
 		// Sorteia uma nova possição para o ponto
 		inteiro sorteio_x = sorteia(0, lar - ponto_tamanho), sorteio_y = sorteia(25, alt - ponto_tamanho)
 		ponto_posicao[0] = sorteio_x
 		ponto_posicao[1] = sorteio_y
+	}
+
+	// Funções referentes a movimentação
+	funcao movimento_inimigo(inteiro numero_do_inimigo){
+		inteiro num[2] = {
+			json_inimigo_posicao(numero_do_inimigo, "x"),
+			json_inimigo_posicao(numero_do_inimigo, "y")
+		}
+
+		se(jogador_posicao[0] > num[0]){
+			o.atribuir_propriedade(posicao_inimigos, "inimigo_" + numero_do_inimigo + "_x", num[0] + 1)
+		}
+		senao se(jogador_posicao[0] < num[0]){
+			o.atribuir_propriedade(posicao_inimigos, "inimigo_" + numero_do_inimigo + "_x", num[0] - 1)
+		}
+		se(jogador_posicao[1] > num[1]){
+			o.atribuir_propriedade(posicao_inimigos, "inimigo_" + numero_do_inimigo + "_y", num[1] + 1)
+		}
+		senao se(jogador_posicao[1] < num[1]){
+			o.atribuir_propriedade(posicao_inimigos, "inimigo_" + numero_do_inimigo + "_y", num[1] - 1)
+		}
 	}
 	funcao movimento_jogador(){
 		se(lar <= 750){
@@ -539,6 +480,8 @@ programa
 			jogador_virado_para_a_direita = verdadeiro
 		}
 	}
+
+	// Funções referentes a configurações
 	funcao funcoes_teclado(){
 		// Salva uma captura de tela na pasta do jogo
 		se(t.tecla_pressionada(t.TECLA_F2)){
@@ -584,20 +527,144 @@ programa
 			enquanto(t.alguma_tecla_pressionada()){}
 		}
 	}
-	funcao detectar_colisao_com_a_janela(){
-		// Detecta se o jogador saiu para fora da janela e o coloca novamente na janela
-		se(jogador_posicao[1] < 25){
-			jogador_posicao[1] += jogador_velocidade
+	funcao definir_posicao_inimigo(inteiro numero_do_inimigo, cadeia tipo_do_inimigo){
+		se(tipo_do_inimigo == "fantasma_cinza"){
+			o.atribuir_propriedade(posicao_inimigos, "inimigo_" + numero_do_inimigo + "_x", lar / 2 - (g.largura_imagem(sprite_fantasma_cinza) / 2) / 2)
+			o.atribuir_propriedade(posicao_inimigos, "inimigo_" + numero_do_inimigo + "_y", alt / 2 - g.altura_imagem(sprite_fantasma_cinza) / 2)
 		}
-		se(jogador_posicao[1] > alt - jogador_tamanho[1]){
-			jogador_posicao[1] -= jogador_velocidade
+	}
+	funcao inteiro json_inimigo_posicao(inteiro numero_do_inimigo, cadeia x_y){
+		retorne o.obter_propriedade_tipo_inteiro(posicao_inimigos, "inimigo_" + numero_do_inimigo + "_" + x_y)
+	}
+	funcao centralizar_texto(inteiro y, cadeia texto){
+		inteiro x = 0
+		x = (lar / 2) - (g.altura_texto("A") * tx.numero_caracteres(texto)) / 2
+		g.desenhar_texto(x, y, texto)
+	}
+	funcao atualizar_maior_pontuacao(){
+		se(pontuacao > maior_pontuacao){
+			// Atualiza a variavel
+			maior_pontuacao = pontuacao
+			
+			// Atualiza a nova pontuação no arquivo
+			cadeia maior_pontos = maior_pontuacao + ""
+			se(maior_pontuacao < 100 e maior_pontuacao < 10){
+				maior_pontos = "00" + maior_pontos
+			}
+			senao se(maior_pontuacao < 100 e maior_pontuacao >= 10){
+				maior_pontos = "0" + maior_pontos
+			}
+			arquivo_pontuacao = a.abrir_arquivo(pasta_config + "/pontuacao.config", a.MODO_ESCRITA)
+			a.escrever_linha("\"maior_pontuacao\": \"" + maior_pontos + "\"", arquivo_pontuacao)
+			a.fechar_arquivo(arquivo_configuracoes)
 		}
-		se(jogador_posicao[0] < 0){
-			jogador_posicao[0] += jogador_velocidade
+	}
+	funcao obter_fps(){
+		// Aumenta a taxa de fps
+		fps_taxa++
+
+		// Obtem o tempo atual, quando necessário
+		se(fps_obter_tempo){
+			fps_tempo_inicio = u.tempo_decorrido()
+			fps_obter_tempo = falso
 		}
-		se(jogador_posicao[0] > lar - jogador_tamanho[0]){
-			jogador_posicao[0] -= jogador_velocidade
+
+		// Detecta se já se passou 1 segundo desde a obtenção do tempo atual
+		se((u.tempo_decorrido() - fps_tempo_inicio) / 1000 >= 1){
+			fps_atual = fps_taxa
+			fps_taxa = 0
+			fps_obter_tempo = verdadeiro
 		}
+	}
+
+	// Funções referentes a detecções
+	funcao inteiro detectar_se_jogador_selecionou_botao_configuracoes(){
+		inteiro x = m.posicao_x(), y = m.posicao_y()
+		inteiro botao_pressionado = -1
+
+		se(m.botao_pressionado(m.BOTAO_ESQUERDO)){
+			// Botão de voltar ao menu
+			se(x > lar - 60 e x < lar - 60 + 50 e y > 10 e y < 10 + 27){
+				s.reproduzir_som(som_button_click, falso)
+				botao_pressionado = 0
+			}
+
+			// Botão de escolha de idioma
+			se(y > alt / 4 e y < alt / 4 + g.altura_texto("A")){
+				s.reproduzir_som(som_button_click, falso)
+				botao_pressionado = 1
+			}
+			
+			// Botão de música
+			se(y > alt / 4 + g.altura_texto("A") * 2 e y < alt / 4 + g.altura_texto("A") * 3){
+				s.reproduzir_som(som_button_click, falso)
+				botao_pressionado = 2
+			}
+			
+			// Botão de efeitos sonoros
+			se(y > alt / 4 + g.altura_texto("A") * 4 e y < alt / 4 + g.altura_texto("A") * 5){
+				s.reproduzir_som(som_button_click, falso)
+				botao_pressionado = 3
+			}
+
+			// Loop que evita excessiovos cliques do jogador no mesmo botão
+			enquanto(m.algum_botao_pressionado()){}
+		}
+		
+		// Retorna um número equivalente a um botão da tela de configurações
+		retorne botao_pressionado
+	}
+	funcao detectar_se_jogador_selecionou_botao_menu(){
+		inteiro x = m.posicao_x(), y = m.posicao_y()
+		se(m.botao_pressionado(m.BOTAO_ESQUERDO)){
+			// Clique no botão de jogar
+			se(x > lar / 2 - 75 e x < lar / 2 - 75 + g.largura_imagem(menu_play_button) e
+			y > alt / 2 e y < alt / 2 + g.altura_imagem(menu_play_button)){
+				tela_atual = 2
+			}
+
+			// Clique no botão de configurações
+			se(x > lar / 4 - 75 e x < lar / 4 - 75 + g.largura_imagem(menu_config_button) e
+			y > alt / 2 + 45 e y < alt / 2 + 45 + g.altura_imagem(menu_config_button)){
+				tela_atual = 1
+			}
+
+			// Clique no botão de sair
+			se(x > lar / 2 + lar / 4 - 32 e x < lar / 2 + lar / 4 - 32 + g.largura_imagem(menu_quit_button) e
+			y > alt / 2 + 45 e y < alt / 2 + 45 + g.altura_imagem(menu_quit_button)){
+				finalizar()
+			}
+		}
+		
+		// Loop que evita eventuais cliques excessivos do jogador
+		enquanto(m.algum_botao_pressionado()){}
+	}
+	funcao detectar_se_jogador_selecionou_personagem(){
+		inteiro x = m.posicao_x(), y = m.posicao_y()
+
+		// Detecta se o jogador selecionou um personagem
+		se(m.botao_pressionado(m.BOTAO_ESQUERDO)){
+			se(y >= selecao_de_personagem_posicao_y_retangulo e y <= alt - (selecao_de_personagem_divisao_entre_retangulo + 8)){
+				se(x >= selecao_de_personagem_divisao_entre_retangulo e x <= selecao_de_personagem_divisao_entre_retangulo + selecao_de_personagem_largura_ratangulo){
+					jogador_cor = "verde"
+					jogador_sprite = g.carregar_imagem(pasta_sprites + "/slime_" + jogador_cor + ".png")
+					tela_atual = 3
+				}
+				se(x >= selecao_de_personagem_divisao_entre_retangulo * 2 + selecao_de_personagem_largura_ratangulo e x <= selecao_de_personagem_divisao_entre_retangulo * 2 + selecao_de_personagem_largura_ratangulo * 2){
+					jogador_cor = "azul"
+					jogador_sprite = g.carregar_imagem(pasta_sprites + "/slime_" + jogador_cor + ".png")
+					tela_atual = 3
+				}
+				se(x >= selecao_de_personagem_divisao_entre_retangulo * 3 + selecao_de_personagem_largura_ratangulo * 2 e x <= selecao_de_personagem_divisao_entre_retangulo * 3 + selecao_de_personagem_largura_ratangulo * 3){
+					jogador_cor = "laranja"
+					jogador_sprite = g.carregar_imagem(pasta_sprites + "/slime_" + jogador_cor + ".png")
+					tela_atual = 3
+				}
+			}
+		}
+
+		// Loop que evita eventuais cliques excessivos do jogador
+		enquanto(m.algum_botao_pressionado()){}
 	}
 	funcao detectar_se_jogador_pegou_ponto(){
 		// Variáveis que serão usadas para detectar se o jogador está realmente em cima do ponto
@@ -631,19 +698,24 @@ programa
 		   	sortear_nova_posicao_ponto = verdadeiro
 		}
 	}
-	funcao desenhar_interface(){
-		// Desenha o retângulo de fundo
-		g.definir_cor(janela_cor_fundo_interface)
-		g.desenhar_retangulo(0, 0, lar, 25, falso, verdadeiro)
-
-		// Define a cor do conteúdo a ser desenhado na interface
-		g.definir_cor(janela_cor_conteudo_interface)
-
-		// Desenhos da interface
-		interface_desenhar_pontuacao()
-		centralizar_texto(7, contador_tempo_minutos + ":" + interface_obter_tempo())
-		interface_desenhar_fps()
+	funcao detectar_colisao_com_a_janela(){
+		// Detecta se o jogador saiu para fora da janela e o coloca novamente na janela
+		se(jogador_posicao[1] < 25){
+			jogador_posicao[1] += jogador_velocidade
+		}
+		se(jogador_posicao[1] > alt - jogador_tamanho[1]){
+			jogador_posicao[1] -= jogador_velocidade
+		}
+		se(jogador_posicao[0] < 0){
+			jogador_posicao[0] += jogador_velocidade
+		}
+		se(jogador_posicao[0] > lar - jogador_tamanho[0]){
+			jogador_posicao[0] -= jogador_velocidade
+		}
 	}
+	
+
+	// Funções referentes a interface
 	funcao cadeia interface_obter_tempo(){		
 		// Obtem um tempo para servir de base na primeira vez que a função é executada
 		se(contador_tempo_obter_tempo){
@@ -694,7 +766,7 @@ programa
 		}
 
 		// Atualiza a maior pontuação, caso necessario
-		interface_atualizar_maior_pontuacao()
+		atualizar_maior_pontuacao()
 	}
 	funcao interface_desenhar_fps(){
 		cadeia fps = fps_atual + ""
@@ -712,22 +784,8 @@ programa
 		g.desenhar_texto(lar - 10 - (g.altura_texto("A") * tx.numero_caracteres("FPS: " + fps)),
 		7, "FPS: " + fps)
 	}
-	funcao carregar_imagens(){
-		menu_play_button = g.carregar_imagem(pasta_menus + "/buttons/play_button.png")
-		menu_config_button = g.carregar_imagem(pasta_menus + "/buttons/config_button.png")
-		menu_quit_button = g.carregar_imagem(pasta_menus + "/buttons/quit_button.png")
-		sprite_fantasma_cinza = g.carregar_imagem(pasta_sprites + "/fantasma_cinza.png")
-	}
-	funcao liberar_imagens(){
-		g.liberar_imagem(menu_play_button)
-		g.liberar_imagem(menu_config_button)
-		g.liberar_imagem(menu_quit_button)
-	}
-	funcao carregar_fontes(){
-		// Carrega as fontes
-		g.carregar_fonte(pasta_fonts + "/PressStart2P.ttf")
-		g.definir_fonte_texto("Press Start 2P")
-	}
+
+	// Funções referentes a carregar arquivos
 	funcao carregar_arquivos(){
 		// Carrega o arquivo de configurações
 		se(a.arquivo_existe(pasta_config + "/config.config")){
@@ -786,64 +844,34 @@ programa
 			a.fechar_arquivo(en_us)
 		}
 	}
+	funcao carregar_imagens(){
+		menu_play_button = g.carregar_imagem(pasta_menus + "/buttons/play_button.png")
+		menu_config_button = g.carregar_imagem(pasta_menus + "/buttons/config_button.png")
+		menu_quit_button = g.carregar_imagem(pasta_menus + "/buttons/quit_button.png")
+		sprite_fantasma_cinza = g.carregar_imagem(pasta_sprites + "/fantasma_cinza.png")
+	}
+	funcao carregar_fontes(){
+		// Carrega as fontes
+		g.carregar_fonte(pasta_fonts + "/PressStart2P.ttf")
+		g.definir_fonte_texto("Press Start 2P")
+	}
 	funcao carregar_sons(){
 		som_button_click = s.carregar_som(pasta_sons + "/sfx/button_click.mp3")
 	}
-	funcao tutorial(){
-		// Exibe o texto do tutorial até que o jogador colete um ponto
-		se(pontuacao == 0){
-			g.definir_cor(0xffffff)
-			g.definir_tamanho_texto(14.0)
-			centralizar_texto(50, lang_json("tutorial_1"))
-			centralizar_texto(50 + g.altura_texto("A") + 5, lang_json("tutorial_2"))
-			centralizar_texto(50 + (g.altura_texto("A") + 5) * 2, lang_json("tutorial_3"))
-			centralizar_texto(50 + (g.altura_texto("A") + 5) * 3, lang_json("tutorial_4"))
-		}
 
-		// Caso o jogador colete um ponto, o tutorial se finaliza
-		senao{
-			exibir_tutorial = falso
-		}
+	// Funções referentes a liberar arquivos
+	funcao liberar_imagens(){
+		g.liberar_imagem(menu_play_button)
+		g.liberar_imagem(menu_config_button)
+		g.liberar_imagem(menu_quit_button)
 	}
-	funcao interface_atualizar_maior_pontuacao(){
-		se(pontuacao > maior_pontuacao){
-			// Atualiza a variavel
-			maior_pontuacao = pontuacao
-			
-			// Atualiza a nova pontuação no arquivo
-			cadeia maior_pontos = maior_pontuacao + ""
-			se(maior_pontuacao < 100 e maior_pontuacao < 10){
-				maior_pontos = "00" + maior_pontos
-			}
-			senao se(maior_pontuacao < 100 e maior_pontuacao >= 10){
-				maior_pontos = "0" + maior_pontos
-			}
-			arquivo_pontuacao = a.abrir_arquivo(pasta_config + "/pontuacao.config", a.MODO_ESCRITA)
-			a.escrever_linha("\"maior_pontuacao\": \"" + maior_pontos + "\"", arquivo_pontuacao)
-			a.fechar_arquivo(arquivo_configuracoes)
-		}
+	funcao liberar_sons(){
+		s.liberar_som(som_button_click)
 	}
-	funcao obter_fps(){
-		// Aumenta a taxa de fps
-		fps_taxa++
 
-		// Obtem o tempo atual, quando necessário
-		se(fps_obter_tempo){
-			fps_tempo_inicio = u.tempo_decorrido()
-			fps_obter_tempo = falso
-		}
-
-		// Detecta se já se passou 1 segundo desde a obtenção do tempo atual
-		se((u.tempo_decorrido() - fps_tempo_inicio) / 1000 >= 1){
-			fps_atual = fps_taxa
-			fps_taxa = 0
-			fps_obter_tempo = verdadeiro
-		}
-	}
-	funcao centralizar_texto(inteiro y, cadeia texto){
-		inteiro x = 0
-		x = (lar / 2) - (g.altura_texto("A") * tx.numero_caracteres(texto)) / 2
-		g.desenhar_texto(x, y, texto)
+	// Funções referentes a lingua do jogo
+	funcao cadeia lang_json(cadeia propriedade){
+		retorne o.obter_propriedade_tipo_cadeia(lingua_escolhida(), propriedade)
 	}
 	funcao inteiro lingua_escolhida(){
 		se(configuracoes_lingua == "Português (BR)"){
@@ -855,8 +883,5 @@ programa
 		senao{
 			retorne lang_pt_br
 		}
-	}
-	funcao cadeia lang_json(cadeia propriedade){
-		retorne o.obter_propriedade_tipo_cadeia(lingua_escolhida(), propriedade)
 	}
 }
