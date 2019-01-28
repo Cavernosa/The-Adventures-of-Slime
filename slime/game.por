@@ -56,8 +56,8 @@ programa
 	erro_carregamento_arquivos = falso
 	
 	// Arquivos
-	inteiro arq_config = 0,
-	arq_pontuacao = 0,
+	inteiro arquivo_configuracoes = 0,
+	arquivo_pontuacao = 0,
 	obj_pontuacao = 0,
 	pt_br = 0,
 	en_us = 0
@@ -99,8 +99,8 @@ programa
 	// Inimigos
 	const inteiro numero_de_inimigos = 2
 	inteiro posicao_inimigos = o.criar_objeto(),
-	posicao_inimigo[numero_de_inimigos][2]
-	inteiro tipo_inimigos = o.criar_objeto_via_json("{\"inimigo_1\": \"fantasma_cinza\"}")
+	posicao_inimigo[numero_de_inimigos][2],
+	tipo_inimigos = o.criar_objeto_via_json("{\"inimigo_1\": \"fantasma_cinza\"}")
 	
 	funcao inicio()
 	{
@@ -217,13 +217,13 @@ programa
 		se(jogador_posicao[0] > num[0]){
 			o.atribuir_propriedade(posicao_inimigos, "inimigo_" + numero_do_inimigo + "_x", num[0] + 1)
 		}
-		se(jogador_posicao[0] < num[0]){
+		senao se(jogador_posicao[0] < num[0]){
 			o.atribuir_propriedade(posicao_inimigos, "inimigo_" + numero_do_inimigo + "_x", num[0] - 1)
 		}
 		se(jogador_posicao[1] > num[1]){
 			o.atribuir_propriedade(posicao_inimigos, "inimigo_" + numero_do_inimigo + "_y", num[1] + 1)
 		}
-		se(jogador_posicao[1] < num[1]){
+		senao se(jogador_posicao[1] < num[1]){
 			o.atribuir_propriedade(posicao_inimigos, "inimigo_" + numero_do_inimigo + "_y", num[1] - 1)
 		}
 	}
@@ -233,19 +233,19 @@ programa
 		
 		// Desenha o botão de jogar
 		g.desenhar_imagem(lar / 2 - 75, alt / 2, menu_play_button)
-		cadeia texto_play = json("menu_jogar")
+		cadeia texto_play = lang_json("menu_jogar")
 		g.desenhar_texto((lar / 2) - (g.altura_texto("A") * tx.numero_caracteres(texto_play)) / 2,
 		lar / 2 - 82 + g.altura_imagem(menu_play_button), texto_play)
 
 		// Desenha o botão de configurações
 		g.desenhar_imagem(lar / 4 - 75, alt / 2 + 45, menu_config_button)
-		cadeia texto_config = json("menu_configuracoes")
+		cadeia texto_config = lang_json("menu_configuracoes")
 		g.desenhar_texto((lar / 4 - 32) - (g.altura_texto("A") * tx.numero_caracteres(texto_config)) / 2,
 		lar / 2 - 38 + g.altura_imagem(menu_config_button), texto_config)
 
 		// Desenha o botão de sair
 		g.desenhar_imagem(lar / 2 + lar / 4 - 32, alt / 2 + 45, menu_quit_button)
-		cadeia texto_quit = json("menu_sair")
+		cadeia texto_quit = lang_json("menu_sair")
 		g.desenhar_texto((lar / 2 + lar / 4 + 15) - (g.altura_texto("A") * tx.numero_caracteres(texto_quit)) / 2,
 		lar / 2 - 38 + g.altura_imagem(menu_quit_button), texto_quit)
 
@@ -260,7 +260,7 @@ programa
 		// Escreve "Seleção de personagem"
 		g.definir_cor(0xffffff)
 		g.definir_tamanho_texto(25.0)
-		centralizar_texto(25, json("selpersonagem_selecao_de_personagem"))
+		centralizar_texto(25, lang_json("selpersonagem_selecao_de_personagem"))
 
 		// Desenha as divisões de cada personagem
 		para(inteiro q = 1; q - 1 < 3; q++){
@@ -380,7 +380,7 @@ programa
 	funcao configuracoes(){
 		g.definir_cor(janela_cor_fundo_interface)
 		g.definir_tamanho_texto(20.0)
-		centralizar_texto((alt / 4) / 4, json("menu_configuracoes"))
+		centralizar_texto((alt / 4) / 4, lang_json("menu_configuracoes"))
 
 		// Desenha o botão de voltar
 		g.definir_cor(janela_cor_fundo_interface)
@@ -402,23 +402,23 @@ programa
 		// Música
 		g.desenhar_texto(x, alt / 4 + g.altura_texto("A") * 2, o.obter_propriedade_tipo_cadeia(lingua_escolhida(), "config_musica"))
 		se(configuracoes_musica == falso){
-			g.desenhar_texto((lar - x) - (tx.numero_caracteres(json("nao")) * g.altura_texto("A")),
-			alt / 4 + g.altura_texto("A") * 2, json("nao"))
+			g.desenhar_texto((lar - x) - (tx.numero_caracteres(lang_json("nao")) * g.altura_texto("A")),
+			alt / 4 + g.altura_texto("A") * 2, lang_json("nao"))
 		}
 		senao{
-			g.desenhar_texto((lar - x) - (tx.numero_caracteres(json("sim")) * g.altura_texto("A")),
-			alt / 4 + g.altura_texto("A") * 2, json("sim"))
+			g.desenhar_texto((lar - x) - (tx.numero_caracteres(lang_json("sim")) * g.altura_texto("A")),
+			alt / 4 + g.altura_texto("A") * 2, lang_json("sim"))
 		}
 
 		// Efeitos sonoros
 		g.desenhar_texto(x, alt / 4 + g.altura_texto("A") * 4, o.obter_propriedade_tipo_cadeia(lingua_escolhida(), "config_efeitos_sonoros"))
 		se(configuracoes_efeitos_sonoros == falso){
-			g.desenhar_texto((lar - x) - (tx.numero_caracteres(json("nao")) * g.altura_texto("A")),
-			alt / 4 + g.altura_texto("A") * 4, json("nao"))
+			g.desenhar_texto((lar - x) - (tx.numero_caracteres(lang_json("nao")) * g.altura_texto("A")),
+			alt / 4 + g.altura_texto("A") * 4, lang_json("nao"))
 		}
 		senao{
-			g.desenhar_texto((lar - x) - (tx.numero_caracteres(json("sim")) * g.altura_texto("A")),
-			alt / 4 + g.altura_texto("A") * 4, json("sim"))
+			g.desenhar_texto((lar - x) - (tx.numero_caracteres(lang_json("sim")) * g.altura_texto("A")),
+			alt / 4 + g.altura_texto("A") * 4, lang_json("sim"))
 		}
 
 		escolha(detectar_se_jogador_selecionou_botao_configuracoes()){
@@ -731,10 +731,10 @@ programa
 	funcao carregar_arquivos(){
 		// Carrega o arquivo de configurações
 		se(a.arquivo_existe(pasta_config + "/config.config")){
-			arq_config = a.abrir_arquivo(pasta_config + "/config.config", a.MODO_LEITURA)
+			arquivo_configuracoes = a.abrir_arquivo(pasta_config + "/config.config", a.MODO_LEITURA)
 
 			// Lê se o tutorial já foi exibido
-			cadeia linha = a.ler_linha(arq_config)
+			cadeia linha = a.ler_linha(arquivo_configuracoes)
 			se(linha == "tutorial_exibido: false;"){
 				exibir_tutorial = verdadeiro
 			}
@@ -746,10 +746,10 @@ programa
 		// Carrega o arquivo de pontuações
 		se(a.arquivo_existe(pasta_config + "/pontuacao.config")){
 			// Lê o arquivo de pontuação e passa o código json para uma variável
-			arq_pontuacao = a.abrir_arquivo(pasta_config + "/pontuacao.config", a.MODO_LEITURA)
+			arquivo_pontuacao = a.abrir_arquivo(pasta_config + "/pontuacao.config", a.MODO_LEITURA)
 			cadeia json_pontuacao = ""
-			enquanto(nao a.fim_arquivo(arq_pontuacao)){
-				json_pontuacao += a.ler_linha(arq_pontuacao)
+			enquanto(nao a.fim_arquivo(arquivo_pontuacao)){
+				json_pontuacao += a.ler_linha(arquivo_pontuacao)
 			}
 			obj_pontuacao = o.criar_objeto_via_json("{" + json_pontuacao + "}")
 			maior_pontuacao = tp.cadeia_para_inteiro(o.obter_propriedade_tipo_cadeia(obj_pontuacao, "maior_pontuacao"), 10)
@@ -780,8 +780,8 @@ programa
 		}
 		
 		se(nao erro_carregamento_arquivos){
-			a.fechar_arquivo(arq_config)
-			a.fechar_arquivo(arq_pontuacao)
+			a.fechar_arquivo(arquivo_configuracoes)
+			a.fechar_arquivo(arquivo_pontuacao)
 			a.fechar_arquivo(pt_br)
 			a.fechar_arquivo(en_us)
 		}
@@ -794,10 +794,10 @@ programa
 		se(pontuacao == 0){
 			g.definir_cor(0xffffff)
 			g.definir_tamanho_texto(14.0)
-			centralizar_texto(50, json("tutorial_1"))
-			centralizar_texto(50 + g.altura_texto("A") + 5, json("tutorial_2"))
-			centralizar_texto(50 + (g.altura_texto("A") + 5) * 2, json("tutorial_3"))
-			centralizar_texto(50 + (g.altura_texto("A") + 5) * 3, json("tutorial_4"))
+			centralizar_texto(50, lang_json("tutorial_1"))
+			centralizar_texto(50 + g.altura_texto("A") + 5, lang_json("tutorial_2"))
+			centralizar_texto(50 + (g.altura_texto("A") + 5) * 2, lang_json("tutorial_3"))
+			centralizar_texto(50 + (g.altura_texto("A") + 5) * 3, lang_json("tutorial_4"))
 		}
 
 		// Caso o jogador colete um ponto, o tutorial se finaliza
@@ -818,9 +818,9 @@ programa
 			senao se(maior_pontuacao < 100 e maior_pontuacao >= 10){
 				maior_pontos = "0" + maior_pontos
 			}
-			arq_pontuacao = a.abrir_arquivo(pasta_config + "/pontuacao.config", a.MODO_ESCRITA)
-			a.escrever_linha("\"maior_pontuacao\": \"" + maior_pontos + "\"", arq_pontuacao)
-			a.fechar_arquivo(arq_config)
+			arquivo_pontuacao = a.abrir_arquivo(pasta_config + "/pontuacao.config", a.MODO_ESCRITA)
+			a.escrever_linha("\"maior_pontuacao\": \"" + maior_pontos + "\"", arquivo_pontuacao)
+			a.fechar_arquivo(arquivo_configuracoes)
 		}
 	}
 	funcao obter_fps(){
@@ -856,7 +856,7 @@ programa
 			retorne lang_pt_br
 		}
 	}
-	funcao cadeia json(cadeia propriedade){
+	funcao cadeia lang_json(cadeia propriedade){
 		retorne o.obter_propriedade_tipo_cadeia(lingua_escolhida(), propriedade)
 	}
 }
