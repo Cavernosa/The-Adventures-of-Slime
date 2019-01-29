@@ -9,4 +9,5 @@
 "tutorial_1": "Movimente o slime usando WASD",
 "tutorial_2": "ou as SETAS DIRECIONAIS.",
 "tutorial_3": "Colete os pontos vermelhos",
-"tutorial_4": "para aumentar sua pontuação."
+"tutorial_4": "para aumentar sua pontuação.",
+"taxa_fps_maxima": "Taxa FPS máxima"
