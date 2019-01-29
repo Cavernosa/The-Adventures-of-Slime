@@ -13,8 +13,11 @@ programa
 
 	// Configurações de jogo
 	cadeia configuracoes_lingua = "Português (BR)"
+	
 	logico configuracoes_musica = falso,
 	configuracoes_efeitos_sonoros = verdadeiro
+	
+	inteiro taxa_fps_maxima = 0
 	
 	// Configurações
 	inteiro janela[] = {800, 600},
@@ -287,7 +290,7 @@ programa
 		alt / 4, configuracoes_lingua)
 
 		// Música
-		g.desenhar_texto(x, alt / 4 + g.altura_texto("A") * 2, o.obter_propriedade_tipo_cadeia(lingua_escolhida(), "config_musica"))
+		g.desenhar_texto(x, alt / 4 + g.altura_texto("A") * 2, lang_json("config_musica"))
 		se(configuracoes_musica == falso){
 			g.desenhar_texto((lar - x) - (tx.numero_caracteres(lang_json("nao")) * g.altura_texto("A")),
 			alt / 4 + g.altura_texto("A") * 2, lang_json("nao"))
@@ -298,7 +301,7 @@ programa
 		}
 
 		// Efeitos sonoros
-		g.desenhar_texto(x, alt / 4 + g.altura_texto("A") * 4, o.obter_propriedade_tipo_cadeia(lingua_escolhida(), "config_efeitos_sonoros"))
+		g.desenhar_texto(x, alt / 4 + g.altura_texto("A") * 4, lang_json("config_efeitos_sonoros"))
 		se(configuracoes_efeitos_sonoros == falso){
 			g.desenhar_texto((lar - x) - (tx.numero_caracteres(lang_json("nao")) * g.altura_texto("A")),
 			alt / 4 + g.altura_texto("A") * 4, lang_json("nao"))
@@ -307,7 +310,18 @@ programa
 			g.desenhar_texto((lar - x) - (tx.numero_caracteres(lang_json("sim")) * g.altura_texto("A")),
 			alt / 4 + g.altura_texto("A") * 4, lang_json("sim"))
 		}
-
+		
+		// Taxa de FPS máxima
+		g.desenhar_texto(x, alt / 4 + g.altura_texto("A") * 6, lang_json("taxa_fps_maxima"))
+		se(taxa_fps_maxima <= 0){
+			g.desenhar_texto((lar - x) - (tx.numero_caracteres(lang_json("nao")) * g.altura_texto("A")),
+			alt / 4 + g.altura_texto("A") * 6, lang_json("nao"))
+		}
+		senao{
+			g.desenhar_texto((lar - x) - (tx.numero_caracteres(taxa_fps_maxima + " FPS") * g.altura_texto("A")),
+			alt / 4 + g.altura_texto("A") * 6, taxa_fps_maxima + " FPS")
+		}
+		
 		escolha(detectar_se_jogador_selecionou_botao_configuracoes()){
 			// Botão de voltar ao menu
 			caso 0:
@@ -386,7 +400,7 @@ programa
 		cadeia texto_play = lang_json("menu_jogar")
 		g.desenhar_texto((lar / 2) - (g.altura_texto("A") * tx.numero_caracteres(texto_play)) / 2,
 		lar / 2 - 82 + g.altura_imagem(menu_play_button), texto_play)
-
+		
 		// Desenha o botão de configurações
 		g.desenhar_imagem(lar / 4 - 75, alt / 2 + 45, menu_config_button)
 		cadeia texto_config = lang_json("menu_configuracoes")
@@ -585,28 +599,32 @@ programa
 		se(m.botao_pressionado(m.BOTAO_ESQUERDO)){
 			// Botão de voltar ao menu
 			se(x > lar - 60 e x < lar - 60 + 50 e y > 10 e y < 10 + 27){
-				s.reproduzir_som(som_button_click, falso)
 				botao_pressionado = 0
 			}
 
 			// Botão de escolha de idioma
-			se(y > alt / 4 e y < alt / 4 + g.altura_texto("A")){
-				s.reproduzir_som(som_button_click, falso)
+			senao se(y > alt / 4 e y < alt / 4 + g.altura_texto("A")){
 				botao_pressionado = 1
 			}
 			
 			// Botão de música
-			se(y > alt / 4 + g.altura_texto("A") * 2 e y < alt / 4 + g.altura_texto("A") * 3){
-				s.reproduzir_som(som_button_click, falso)
+			senao se(y > alt / 4 + g.altura_texto("A") * 2 e y < alt / 4 + g.altura_texto("A") * 3){
 				botao_pressionado = 2
 			}
 			
 			// Botão de efeitos sonoros
-			se(y > alt / 4 + g.altura_texto("A") * 4 e y < alt / 4 + g.altura_texto("A") * 5){
-				s.reproduzir_som(som_button_click, falso)
+			senao se(y > alt / 4 + g.altura_texto("A") * 4 e y < alt / 4 + g.altura_texto("A") * 5){
 				botao_pressionado = 3
 			}
 
+			// Executa o som de botão pressionado
+			senao{
+				// Retorna um número equivalente a um botão da tela de configurações
+				retorne botao_pressionado
+			}
+			se(configuracoes_efeitos_sonoros){
+				s.reproduzir_som(som_button_click, falso)
+			}
 			// Loop que evita excessiovos cliques do jogador no mesmo botão
 			enquanto(m.algum_botao_pressionado()){}
 		}
