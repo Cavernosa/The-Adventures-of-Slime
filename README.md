@@ -1,4 +1,4 @@
-# JogoSlime [![versão](https://img.shields.io/badge/versão_atual-alpha_0.1.1-4169E1.svg)](https://github.com/Mateus-Hirt/JogoSlime/archive/master.zip)
+# JogoSlime [![alp 0.1.1](https://img.shields.io/badge/versão_atual-alpha_0.1.1-4169E1.svg)](https://github.com/Mateus-Hirt/JogoSlime/archive/master.zip)
 
 Este projeto tem como objetivo a criação de um jogo em portugol 2.0, usando a IDE Portugol Studio.
 
