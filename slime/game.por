@@ -36,20 +36,23 @@ programa
 	selecao_de_personagem_posicao_y_retangulo = 80,
 	selecao_de_personagem_divisao_entre_retangulo = 50, 
 	selecao_de_personagem_largura_ratangulo = 200
+
 	
 	cadeia nome_personagem[3] = {
 		"Slimey",
 		"Goop",
 		"Slurry"
 	},
-	pasta_jogo = u.obter_diretorio_usuario() + "/slime",
+	formatos_suportados[] = {"Selecione o arquivo que está na pasta do jogo|selecione"},
+	pasta_jogo = tx.substituir(a.selecionar_arquivo(formatos_suportados, falso), "\\ME SELECIONE.selecione", ""),
 	pasta_sprites = pasta_jogo + "/sprites",
 	pasta_fonts = pasta_jogo + "/fonts",
 	pasta_pontos = pasta_jogo + "/points",
 	pasta_menus = pasta_jogo + "/menus",
 	pasta_config = pasta_jogo + "/config",
 	pasta_lang = pasta_jogo + "/lang",
-	pasta_sons = pasta_jogo + "/sons"
+	pasta_sons = pasta_jogo + "/sons",
+	pasta_fases = pasta_jogo + "/fases"
 	
 	logico contador_tempo_obter_tempo = verdadeiro,
 	fps_obter_tempo = verdadeiro,
@@ -118,7 +121,7 @@ programa
 		// Inicia o modo gráfico e define as dimensões da janela
 		g.iniciar_modo_grafico(falso)
 		g.definir_dimensoes_janela(janela[0], janela[1])
-		g.definir_icone_janela(g.carregar_imagem(pasta_config + "/icon.png"))
+		g.definir_icone_janela(g.carregar_imagem(pasta_config + "/icon.png"))		
 
 		// Carrega os arquivos
 		carregar_sons()
@@ -731,7 +734,6 @@ programa
 			jogador_posicao[0] -= jogador_velocidade
 		}
 	}
-	
 
 	// Funções referentes a interface
 	funcao cadeia interface_obter_tempo(){		
@@ -902,4 +904,7 @@ programa
 			retorne lang_pt_br
 		}
 	}
+
+	// Funções referentes aos mapas do jogo
+	// ...
 }
