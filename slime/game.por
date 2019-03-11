@@ -26,16 +26,15 @@ programa
 	janela_cor_fundo = 0x202030,
 	janela_cor_fundo_interface = 0xB0C4DE,
 	janela_cor_conteudo_interface = janela_cor_fundo,
-	tela_atual = 0, // 0 = menu, 1 = config., 2 = sel. de personagem, 3 = jogo
+	MENU = 0, CONFIGURACOES = 1, CUSTOMIZACAO_DE_PERSONAGEM = 2, JOGO = 3,
+	tela_atual = MENU,
+	fase_atual = 1,
 	pontuacao = 0,
 	contador_tempo_inicio = 0,
 	contador_tempo_minutos = 0,
 	fps_tempo_inicio = 0,
 	fps_taxa = 0,
-	fps_atual = 0,
-	selecao_de_personagem_posicao_y_retangulo = 80,
-	selecao_de_personagem_divisao_entre_retangulo = 50, 
-	selecao_de_personagem_largura_ratangulo = 200
+	fps_atual = 0
 
 	
 	cadeia nome_personagem[3] = {
@@ -43,16 +42,15 @@ programa
 		"Goop",
 		"Slurry"
 	},
-	formatos_suportados[] = {"Selecione o arquivo que está na pasta do jogo|selecione"},
-	pasta_jogo = tx.substituir(a.selecionar_arquivo(formatos_suportados, falso), "\\ME SELECIONE.selecione", ""),
-	pasta_sprites = pasta_jogo + "/sprites",
-	pasta_fonts = pasta_jogo + "/fonts",
-	pasta_pontos = pasta_jogo + "/points",
-	pasta_menus = pasta_jogo + "/menus",
-	pasta_config = pasta_jogo + "/config",
-	pasta_lang = pasta_jogo + "/lang",
-	pasta_sons = pasta_jogo + "/sons",
-	pasta_fases = pasta_jogo + "/fases"
+	pasta_sprites = "/sprites",
+	pasta_fonts = "/fonts",
+	pasta_pontos = "/points",
+	pasta_menus = "/menus",
+	pasta_config = "/config",
+	pasta_lang = "/lang",
+	pasta_sons ="/sons",
+	pasta_fases = "/fases",
+	pasta_customizacao = "/customizacao"
 	
 	logico contador_tempo_obter_tempo = verdadeiro,
 	fps_obter_tempo = verdadeiro,
@@ -62,7 +60,6 @@ programa
 	
 	// Arquivos
 	inteiro arquivo_configuracoes = 0,
-	arquivo_pontuacao = 0,
 	obj_pontuacao = 0,
 	pt_br = 0,
 	en_us = 0
@@ -74,13 +71,32 @@ programa
 	inteiro menu_play_button = 0,
 	menu_config_button = 0,
 	menu_quit_button = 0,
-	sprite_fantasma_cinza = 0
+	sprite_fantasma_cinza = 0,
+	customizacao_slime_vermelho = 0,
+	customizacao_slime_laranja = 0,
+	customizacao_slime_amarelo = 0,
+	customizacao_slime_verde = 0,
+	customizacao_slime_azul = 0,
+	customizacao_slime_ciano = 0,
+	customizacao_slime_roxo = 0,
+	customizacao_slime_rosa = 0,
+	sprite_slime_vermelho = 0,
+	sprite_slime_laranja = 0,
+	sprite_slime_amarelo = 0,
+	sprite_slime_verde = 0,
+	sprite_slime_azul = 0,
+	sprite_slime_ciano = 0,
+	sprite_slime_roxo = 0,
+	sprite_slime_rosa = 0
 
 	// Sons
-	inteiro som_button_click = 0
+	inteiro som_button_click = 0,
+	som_point_collected1 = 0,
+	som_point_collected2 = 0
 
 	// Jogador
 	cadeia jogador_cor = "verde"
+	inteiro jogador_cor_numero = 3
 	inteiro jogador_velocidade,
 	jogador_sprite = g.carregar_imagem(pasta_sprites + "/slime_" + jogador_cor + ".png"),
 	jogador_tamanho[2] = {
@@ -116,18 +132,14 @@ programa
 		g.encerrar_modo_grafico()
 		executando = falso
 	}
-	funcao inicio()
-	{
+	funcao inicio(){
 		// Inicia o modo gráfico e define as dimensões da janela
 		g.iniciar_modo_grafico(falso)
 		g.definir_dimensoes_janela(janela[0], janela[1])
-		g.definir_icone_janela(g.carregar_imagem(pasta_config + "/icon.png"))		
+		g.definir_titulo_janela("The Adventures of Slime")
 
 		// Carrega os arquivos
-		carregar_sons()
-		carregar_fontes()
-		carregar_imagens()
-		carregar_arquivos()
+		carregar_todos_os_arquivos()
 
 		definir_posicao_inimigo(1, "fantasma_cinza")
 		
@@ -138,8 +150,41 @@ programa
 				finalizar()
 				pare
 			}
+
+			escolha(jogador_cor_numero){
+				caso 0:
+					g.definir_icone_janela(customizacao_slime_vermelho)
+					pare
+					
+				caso 1:
+					g.definir_icone_janela(customizacao_slime_laranja)
+					pare
+					
+				caso 2:
+					g.definir_icone_janela(customizacao_slime_amarelo)
+					pare
+					
+				caso 3:
+					g.definir_icone_janela(customizacao_slime_verde)
+					pare
+					
+				caso 4:
+					g.definir_icone_janela(customizacao_slime_azul)
+					pare
+					
+				caso 5:
+					g.definir_icone_janela(customizacao_slime_ciano)
+					pare
+					
+				caso 6:
+					g.definir_icone_janela(customizacao_slime_roxo)
+					pare
+					
+				caso 7:
+					g.definir_icone_janela(customizacao_slime_rosa)
+					pare
+			}
 			
-			// Obtem o fps
 			obter_fps()
 			
 			// Define a cor de fundo da janela
@@ -147,29 +192,29 @@ programa
 			g.limpar()
 			
 			// Esta é a tela de menu
-			se(tela_atual == 0){
+			se(tela_atual == MENU){
 				menu()
 			}
 			
 			// Esta é a tela de configurações
-			senao se(tela_atual == 1){
+			senao se(tela_atual == CONFIGURACOES){
 				configuracoes()
 			}
 			
-			// Esta é a tela de selação de personagem
-			senao se(tela_atual == 2){
-				selecao_de_personagem()
+			// Esta é a tela de seleção de personagem
+			senao se(tela_atual == CUSTOMIZACAO_DE_PERSONAGEM){
+				customizacao_de_personagem()
 			}
 			
 			// Esta é a tela de jogo
-			senao se(tela_atual == 3){
+			senao se(tela_atual == JOGO){
 				jogo()
 			}
 
 			// Detecta se o jogador apertou uma determinada tecla que tenha uma função específica
 			funcoes_teclado()
 			
-			// Renderiza os desenhos; 
+			// Renderiza os desenhos;
 			// [!] O "se(executando)" serve para não ocorrer um erro, quando o jogador apertar SHIFT + ESC
 			se(executando){
 				g.renderizar()
@@ -190,6 +235,12 @@ programa
 			g.largura_imagem(sprite_fantasma_cinza) / 2, g.altura_imagem(sprite_fantasma_cinza), sprite_fantasma_cinza)
 		}
 	}
+	funcao desenhar_texto_carregamento_de_arquivos(cadeia texto){
+		g.definir_cor(janela_cor_fundo_interface)
+		centralizar_texto(alt / 2, "CARREGANDO ARQUIVOS")
+		centralizar_texto(alt / 2 + (2 * g.altura_texto("A")), "Carregando: " + texto)
+		g.renderizar()
+	}
 	funcao desenhar_inimigo(inteiro numero_do_inimigo){
 		desenhar_sprite_inimigo(o.obter_propriedade_tipo_cadeia(tipo_inimigos, "inimigo_" + numero_do_inimigo), numero_do_inimigo, verdadeiro)
 	}
@@ -206,7 +257,7 @@ programa
 		centralizar_texto(7, contador_tempo_minutos + ":" + interface_obter_tempo())
 		interface_desenhar_fps()
 	}
-	funcao desenhar_jogador(){		
+	funcao desenhar_jogador(){
 		// Desenha o jogador
 		se(jogador_virado_para_a_direita){
 			g.desenhar_porcao_imagem(jogador_posicao[0], jogador_posicao[1],
@@ -223,52 +274,74 @@ programa
 	}
 	
 	// Funções referentes às telas
-	funcao selecao_de_personagem(){
-		inteiro slime_verde = g.carregar_imagem(pasta_jogo + "/menus/slimes/slime_verde.png"),
-		slime_azul = g.carregar_imagem(pasta_jogo + "/menus/slimes/slime_azul.png"),
-		slime_laranja = g.carregar_imagem(pasta_jogo + "/menus/slimes/slime_laranja.png")
-
-		// Escreve "Seleção de personagem"
-		g.definir_cor(0xffffff)
-		g.definir_tamanho_texto(25.0)
-		centralizar_texto(25, lang_json("selpersonagem_selecao_de_personagem"))
-
-		// Desenha as divisões de cada personagem
-		para(inteiro q = 1; q - 1 < 3; q++){
-			g.definir_cor(janela_cor_fundo_interface)
-			g.desenhar_retangulo((q * selecao_de_personagem_divisao_entre_retangulo) + ((q - 1) * selecao_de_personagem_largura_ratangulo),
-			selecao_de_personagem_posicao_y_retangulo, selecao_de_personagem_largura_ratangulo, alt - (selecao_de_personagem_posicao_y_retangulo * 2) + 25, falso, verdadeiro)
-			g.definir_cor(janela_cor_fundo)
-			g.desenhar_retangulo((q * selecao_de_personagem_divisao_entre_retangulo) + ((q - 1) * selecao_de_personagem_largura_ratangulo) + 10,
-			selecao_de_personagem_posicao_y_retangulo + 10, selecao_de_personagem_largura_ratangulo - 20, 180, falso, verdadeiro)
+	funcao customizacao_de_personagem(){
+		g.definir_cor(janela_cor_fundo_interface)
+		g.definir_tamanho_texto(20.0)
+		centralizar_texto((alt / 4) / 4, lang_json("customizacao_de_personagem_customizacao_de_personagem"))
+		
+		g.definir_tamanho_texto(14.0)
+		centralizar_texto((alt / 4) / 2, "- " + lang_json("customizacao_de_personagem_cor_do_slime") + " -")
+		
+		escolha(jogador_cor_numero){
+			caso 0:
+				g.desenhar_imagem((lar / 2) - (g.largura_imagem(customizacao_slime_vermelho) / 2) + 10,
+					(alt / 2) - (g.altura_imagem(customizacao_slime_vermelho) / 2),
+					customizacao_slime_vermelho)
+				pare
+				
+			caso 1:
+				g.desenhar_imagem((lar / 2) - (g.largura_imagem(customizacao_slime_laranja) / 2) + 10,
+					(alt / 2) - (g.altura_imagem(customizacao_slime_laranja) / 2),
+					customizacao_slime_laranja)
+				pare
+				
+			caso 2:
+				g.desenhar_imagem((lar / 2) - (g.largura_imagem(customizacao_slime_amarelo) / 2) + 10,
+					(alt / 2) - (g.altura_imagem(customizacao_slime_amarelo) / 2),
+					customizacao_slime_amarelo)
+				pare
+				
+			caso 3:
+				g.desenhar_imagem((lar / 2) - (g.largura_imagem(customizacao_slime_verde) / 2) + 10,
+					(alt / 2) - (g.altura_imagem(customizacao_slime_verde) / 2),
+					customizacao_slime_verde)
+				pare
+				
+			caso 4:
+				g.desenhar_imagem((lar / 2) - (g.largura_imagem(customizacao_slime_azul) / 2) + 10,
+					(alt / 2) - (g.altura_imagem(customizacao_slime_azul) / 2),
+					customizacao_slime_azul)
+				pare
+				
+			caso 5:
+				g.desenhar_imagem((lar / 2) - (g.largura_imagem(customizacao_slime_ciano) / 2) + 10,
+					(alt / 2) - (g.altura_imagem(customizacao_slime_ciano) / 2),
+					customizacao_slime_ciano)
+				pare
+				
+			caso 6:
+				g.desenhar_imagem((lar / 2) - (g.largura_imagem(customizacao_slime_roxo) / 2) + 10,
+					(alt / 2) - (g.altura_imagem(customizacao_slime_roxo) / 2),
+					customizacao_slime_roxo)
+				pare
+				
+			caso 7:
+				g.desenhar_imagem((lar / 2) - (g.largura_imagem(customizacao_slime_rosa) / 2) + 10,
+					(alt / 2) - (g.altura_imagem(customizacao_slime_rosa) / 2),
+					customizacao_slime_rosa)
+				pare
 		}
 
-		// Desenha a imagem de cada personagem
-		g.desenhar_imagem(selecao_de_personagem_divisao_entre_retangulo + 10, selecao_de_personagem_posicao_y_retangulo + 25, slime_verde)
-		g.desenhar_imagem((selecao_de_personagem_divisao_entre_retangulo * 2 + selecao_de_personagem_largura_ratangulo) + 10, selecao_de_personagem_posicao_y_retangulo + 25, slime_azul)
-		g.desenhar_imagem((selecao_de_personagem_divisao_entre_retangulo * 3 + selecao_de_personagem_largura_ratangulo * 2) + 10, selecao_de_personagem_posicao_y_retangulo + 25, slime_laranja)
-
-		// Escreve o nome dos personagens
-		para(inteiro q = 1; q - 1 < 3; q++){
-			// Variável que vai auxiliar na hora de desenhar o texto
-			inteiro x = (q * selecao_de_personagem_divisao_entre_retangulo) + ((q - 1) * selecao_de_personagem_largura_ratangulo) + 10
-
-			// Define o tamanho e a cor do texto
-			g.definir_tamanho_texto(18.0)
-			g.definir_cor(janela_cor_fundo)
-
-			// Desenha o texto centralizado do nome do personagem(faz a média do tamanho do quadrado e centraliz o texto apartir deste valor)
-			g.desenhar_texto((x + (x + selecao_de_personagem_largura_ratangulo - 20)) / 2 - (g.altura_texto("A") * tx.numero_caracteres(nome_personagem[q - 1])) / 2,
-			selecao_de_personagem_posicao_y_retangulo + 10 + 190, nome_personagem[q - 1])
-		}
+		customizacao_desenhar_cores_cor_slime()
+		g.definir_cor(janela_cor_fundo_interface)
 		
-		// Detecta se o jogador selecionou um personagem
-		detectar_se_jogador_selecionou_personagem()
-		
-		// Libera as imagens, para não ocorrer um estouro de memória
-		g.liberar_imagem(slime_verde)
-		g.liberar_imagem(slime_azul)
-		g.liberar_imagem(slime_laranja)
+		g.desenhar_retangulo(lar - 190, alt - 50, 175, 35, verdadeiro, verdadeiro)
+		g.definir_cor(janela_cor_fundo)
+		g.definir_tamanho_texto(18.0)
+		g.desenhar_texto((lar - 100) - (g.altura_texto("A") * tx.numero_caracteres(lang_json("customizacao_de_personagem_concluido"))) / 2, alt - 42, lang_json("customizacao_de_personagem_concluido"))
+
+		detectar_se_jogador_mudou_cor_slime()
+		detectar_se_jogador_selecionou_botao_customizacao_de_personagem()
 	}
 	funcao configuracoes(){
 		g.definir_cor(janela_cor_fundo_interface)
@@ -328,7 +401,7 @@ programa
 		escolha(detectar_se_jogador_selecionou_botao_configuracoes()){
 			// Botão de voltar ao menu
 			caso 0:
-				tela_atual = 0
+				tela_atual = MENU
 				pare
 			
 			// Botão de escolha de idioma
@@ -370,7 +443,6 @@ programa
 		centralizar_texto(alt / 2 - g.altura_texto("A") / 2 + g.altura_texto("A") * 6, "2. Verifique se não está faltando nenhuma pasta ou arquivo;")
 		centralizar_texto(alt / 2 - g.altura_texto("A") / 2 + g.altura_texto("A") * 8, "3. Reinicie o jogo, pode ser que tenha ocorrido um bug.")
 		centralizar_texto(alt / 2 - g.altura_texto("A") / 2 + g.altura_texto("A") * 12, "Pressione SHIFT + ESC para finalizar e verificar os arquivos.")
-		centralizar_texto(alt / 2 - g.altura_texto("A") / 2 + g.altura_texto("A") * 14, "Pasta do jogo: " + pasta_jogo)
 		g.renderizar()
 		
 		// Loop que aguarda o jogador finalizar o programa
@@ -395,6 +467,8 @@ programa
 		}
 	}
 	funcao menu(){
+		g.definir_tamanho_texto(12.0)
+		
 		// Define a cor do texto dos botôes
 		g.definir_cor(janela_cor_fundo_interface)
 		
@@ -435,6 +509,7 @@ programa
 		detectar_colisao_com_a_janela()
 		
 		// Funções referentes a desenhos
+		desenhar_fase()
 		desenhar_ponto()
 		desenhar_inimigo(1)
 		desenhar_jogador()
@@ -446,6 +521,45 @@ programa
 		}
 	}
 
+	// Funcões referentes à customização de personagem
+	funcao customizacao_desenhar_cores_cor_slime(){
+		inteiro cores[8] = {
+			0xff3300,
+			0xff9900,
+			0xffff00,
+			0x00cc66,
+			0x0066ff,
+			0x00ffff,
+			0x9933ff,
+			0xff3399
+		}
+		inteiro y = (alt / 2 + g.altura_imagem(customizacao_slime_vermelho) / 2) + 50
+		
+		g.definir_cor(cores[0])
+		g.desenhar_retangulo(lar / 2 - 11 - (20 * 3) - (5 * 3), y, 20, 20, falso, verdadeiro)
+		
+		g.definir_cor(cores[1])
+		g.desenhar_retangulo(lar / 2 - 11 - (20 * 2) - (5 * 2), y, 20, 20, falso, verdadeiro)
+		
+		g.definir_cor(cores[2])
+		g.desenhar_retangulo(lar / 2 - 11 - (20 * 1) - (5 * 1), y, 20, 20, falso, verdadeiro)
+		
+		g.definir_cor(cores[3])
+		g.desenhar_retangulo(lar / 2 - 12, y, 20, 20, falso, verdadeiro)
+		
+		g.definir_cor(cores[4])
+		g.desenhar_retangulo(lar / 2 + 12, y, 20, 20, falso, verdadeiro)
+		
+		g.definir_cor(cores[5])
+		g.desenhar_retangulo(lar / 2 + 11 + (20 * 1) + (5 * 1), y, 20, 20, falso, verdadeiro)
+		
+		g.definir_cor(cores[6])
+		g.desenhar_retangulo(lar / 2 + 11 + (20 * 2) + (5 * 2), y, 20, 20, falso, verdadeiro)
+		
+		g.definir_cor(cores[7])
+		g.desenhar_retangulo(lar / 2 + 11 + (20 * 3) + (5 * 3), y, 20, 20, falso, verdadeiro)
+	}
+	
 	// Funções referentes ao ponto
 	funcao sortear_posicao_ponto(){
 		// Sorteia uma nova possição para o ponto
@@ -503,16 +617,23 @@ programa
 		// Salva uma captura de tela na pasta do jogo
 		se(t.tecla_pressionada(t.TECLA_F2)){
 			inteiro tela = g.renderizar_imagem(lar, alt)
-			g.salvar_imagem(tela, pasta_jogo + "/capturas de tela/captura" + c.hora_atual(falso) +
+			g.salvar_imagem(tela, "/capturas de tela/captura" + c.hora_atual(falso) +
 			c.minuto_atual() + c.segundo_atual() + c.milisegundo_atual() + c.dia_mes_atual()
 			+ c.mes_atual() + c.ano_atual() + ".png")
 
 			// Loop que evita excessivos cliques do jogador na mesma tecla, sem alterar o movimento do personagem
 			enquanto(t.alguma_tecla_pressionada()){}
 		}
+		
+		se(t.tecla_pressionada(t.TECLA_ESC) e (tela_atual == CUSTOMIZACAO_DE_PERSONAGEM ou tela_atual == JOGO)){
+			tela_atual = MENU
+
+			// Loop que evita excessivos cliques do jogador na mesma tecla, sem alterar o movimento do personagem
+			enquanto(t.alguma_tecla_pressionada()){}
+		}
 
 		// Reseta o jogo atual e vai para a seleção de personagens
-		se(tela_atual == 3 e t.tecla_pressionada(t.TECLA_R)){
+		se(tela_atual == JOGO e t.tecla_pressionada(t.TECLA_R)){
 			pontuacao = 0
 			jogador_posicao[0] = (lar / 2) - (jogador_tamanho[0] / 2)
 			jogador_posicao[1] = (alt / 2) - (jogador_tamanho[1] / 2)
@@ -520,19 +641,24 @@ programa
 			sortear_nova_posicao_ponto = verdadeiro
 			contador_tempo_obter_tempo = verdadeiro
 			contador_tempo_minutos = 0
-			tela_atual = 2
+			tela_atual = CUSTOMIZACAO_DE_PERSONAGEM
 
 			// Loop que evita excessivos cliques do jogador na mesma tecla, sem alterar o movimento do personagem
 			enquanto(t.alguma_tecla_pressionada()){}
 		}
 		
 		// Pausa o jogo
-		se(tela_atual == 3 e t.tecla_pressionada(t.TECLA_P)){
-			g.definir_opacidade(100)
+		se(tela_atual == JOGO e t.tecla_pressionada(t.TECLA_P)){
+			g.definir_opacidade(155)
 			g.definir_cor(0x404040)
 			g.desenhar_retangulo(0, 0, lar, alt, falso, verdadeiro)
-			g.renderizar()
 			g.definir_opacidade(255)
+			g.definir_cor(janela_cor_fundo_interface)
+			g.definir_tamanho_texto(45.0)
+			centralizar_texto(alt / 2 - g.altura_texto("A") / 2, "PAUSADO")
+			g.definir_tamanho_texto(14.0)
+			centralizar_texto(alt / 2 + 25, "Pressione P para retornar ao jogo")
+			g.renderizar()
 			
 			// Loop que evita excessivos cliques do jogador na mesma tecla, sem alterar o movimento do personagem
 			enquanto(t.alguma_tecla_pressionada()){}
@@ -553,28 +679,21 @@ programa
 	funcao inteiro json_inimigo_posicao(inteiro numero_do_inimigo, cadeia x_y){
 		retorne o.obter_propriedade_tipo_inteiro(posicao_inimigos, "inimigo_" + numero_do_inimigo + "_" + x_y)
 	}
+	funcao cadeia conteudo_arquivo_json(inteiro arquivo){
+		cadeia json = ""
+		enquanto(nao a.fim_arquivo(arquivo)){
+			json += a.ler_linha(arquivo)
+		}
+		a.fechar_arquivo(arquivo)
+		retorne "{" + json + "}"
+	}
 	funcao centralizar_texto(inteiro y, cadeia texto){
 		inteiro x = 0
 		x = (lar / 2) - (g.altura_texto("A") * tx.numero_caracteres(texto)) / 2
 		g.desenhar_texto(x, y, texto)
 	}
-	funcao atualizar_maior_pontuacao(){
-		se(pontuacao > maior_pontuacao){
-			// Atualiza a variavel
-			maior_pontuacao = pontuacao
-			
-			// Atualiza a nova pontuação no arquivo
-			cadeia maior_pontos = maior_pontuacao + ""
-			se(maior_pontuacao < 100 e maior_pontuacao < 10){
-				maior_pontos = "00" + maior_pontos
-			}
-			senao se(maior_pontuacao < 100 e maior_pontuacao >= 10){
-				maior_pontos = "0" + maior_pontos
-			}
-			arquivo_pontuacao = a.abrir_arquivo(pasta_config + "/pontuacao.config", a.MODO_ESCRITA)
-			a.escrever_linha("\"maior_pontuacao\": \"" + maior_pontos + "\"", arquivo_pontuacao)
-			a.fechar_arquivo(arquivo_configuracoes)
-		}
+	funcao console(cadeia texto){
+		escreva("[" + c.hora_atual(falso) + ":" + c.minuto_atual() +  " " + c.dia_mes_atual() + "/" + c.mes_atual() + "/" +  c.ano_atual() + "] " + texto + "\n")
 	}
 	funcao obter_fps(){
 		// Aumenta a taxa de fps
@@ -620,14 +739,12 @@ programa
 				botao_pressionado = 3
 			}
 
-			// Executa o som de botão pressionado
 			senao{
-				// Retorna um número equivalente a um botão da tela de configurações
 				retorne botao_pressionado
 			}
-			se(configuracoes_efeitos_sonoros){
-				s.reproduzir_som(som_button_click, falso)
-			}
+			
+			tocar_som_selecao_menu()
+			
 			// Loop que evita excessiovos cliques do jogador no mesmo botão
 			enquanto(m.algum_botao_pressionado()){}
 		}
@@ -641,13 +758,13 @@ programa
 			// Clique no botão de jogar
 			se(x > lar / 2 - 75 e x < lar / 2 - 75 + g.largura_imagem(menu_play_button) e
 			y > alt / 2 e y < alt / 2 + g.altura_imagem(menu_play_button)){
-				tela_atual = 2
+				tela_atual = CUSTOMIZACAO_DE_PERSONAGEM
 			}
 
 			// Clique no botão de configurações
 			se(x > lar / 4 - 75 e x < lar / 4 - 75 + g.largura_imagem(menu_config_button) e
 			y > alt / 2 + 45 e y < alt / 2 + 45 + g.altura_imagem(menu_config_button)){
-				tela_atual = 1
+				tela_atual = CONFIGURACOES
 			}
 
 			// Clique no botão de sair
@@ -660,32 +777,109 @@ programa
 		// Loop que evita eventuais cliques excessivos do jogador
 		enquanto(m.algum_botao_pressionado()){}
 	}
-	funcao detectar_se_jogador_selecionou_personagem(){
+	funcao detectar_se_jogador_selecionou_botao_customizacao_de_personagem(){
 		inteiro x = m.posicao_x(), y = m.posicao_y()
-
-		// Detecta se o jogador selecionou um personagem
+		
 		se(m.botao_pressionado(m.BOTAO_ESQUERDO)){
-			se(y >= selecao_de_personagem_posicao_y_retangulo e y <= alt - (selecao_de_personagem_divisao_entre_retangulo + 8)){
-				se(x >= selecao_de_personagem_divisao_entre_retangulo e x <= selecao_de_personagem_divisao_entre_retangulo + selecao_de_personagem_largura_ratangulo){
-					jogador_cor = "verde"
-					jogador_sprite = g.carregar_imagem(pasta_sprites + "/slime_" + jogador_cor + ".png")
-					tela_atual = 3
-				}
-				se(x >= selecao_de_personagem_divisao_entre_retangulo * 2 + selecao_de_personagem_largura_ratangulo e x <= selecao_de_personagem_divisao_entre_retangulo * 2 + selecao_de_personagem_largura_ratangulo * 2){
-					jogador_cor = "azul"
-					jogador_sprite = g.carregar_imagem(pasta_sprites + "/slime_" + jogador_cor + ".png")
-					tela_atual = 3
-				}
-				se(x >= selecao_de_personagem_divisao_entre_retangulo * 3 + selecao_de_personagem_largura_ratangulo * 2 e x <= selecao_de_personagem_divisao_entre_retangulo * 3 + selecao_de_personagem_largura_ratangulo * 3){
-					jogador_cor = "laranja"
-					jogador_sprite = g.carregar_imagem(pasta_sprites + "/slime_" + jogador_cor + ".png")
-					tela_atual = 3
-				}
+			// Clique no botão de concluir
+			se(x > lar - 190 e x < lar - 190 + 175 e
+			y > alt - 50 e y < alt - 50 + 35){
+				tela_atual = JOGO
+			}
+		}
+		
+		// Loop que evita eventuais cliques excessivos do jogador
+		enquanto(m.algum_botao_pressionado()){}
+		
+	}
+	funcao detectar_se_jogador_mudou_cor_slime(){
+		inteiro x = m.posicao_x(), y = m.posicao_y()
+		inteiro cor_selecionada = -1
+
+		se(y > (alt / 2 + g.altura_imagem(customizacao_slime_vermelho) / 2) + 50 e
+		y < (alt / 2 + g.altura_imagem(customizacao_slime_vermelho) / 2) + 70 e m.botao_pressionado(m.BOTAO_ESQUERDO)){
+			se(x > lar / 2 - 11 - (20 * 3) - (5 * 3) e x < lar / 2 - 11 - (20 * 3) - (5 * 3) + 20){
+				cor_selecionada = 0
+			}
+			
+			se(x > lar / 2 - 11 - (20 * 2) - (5 * 2) e x < lar / 2 - 11 - (20 * 2) - (5 * 2) + 20){
+				cor_selecionada = 1
+			}
+			
+			se(x > lar / 2 - 11 - (20 * 1) - (5 * 1) e x < lar / 2 - 11 - (20 * 1) - (5 * 1) + 20){
+				cor_selecionada = 2
+			}
+			
+			se(x > lar / 2 - 12 e x < lar / 2 - 12 + 20){
+				cor_selecionada = 3
+			}
+			
+			se(x > lar / 2 + 12 e x < lar / 2 + 12 + 20){
+				cor_selecionada = 4
+			}
+			
+			se(x > lar / 2 + 11 + (20 * 1) + (5 * 1) e x < lar / 2 + 11 + (20 * 1) + (5 * 1) + 20){
+				cor_selecionada = 5
+			}
+			
+			se(x > lar / 2 + 11 + (20 * 2) + (5 * 2) e x < lar / 2 + 11 + (20 * 2) + (5 * 2) + 20){
+				cor_selecionada = 6
+			}
+			
+			se(x > lar / 2 + 11 + (20 * 3) + (5 * 3) e x < lar / 2 + 11 + (20 * 3) + (5 * 3) + 20){
+				cor_selecionada = 7
 			}
 		}
 
-		// Loop que evita eventuais cliques excessivos do jogador
-		enquanto(m.algum_botao_pressionado()){}
+		escolha(cor_selecionada){
+			caso 0:
+				jogador_sprite = sprite_slime_vermelho
+				jogador_cor = "vermelho"
+				jogador_cor_numero = 0
+				pare
+				
+			caso 1:
+				jogador_sprite = sprite_slime_laranja
+				jogador_cor = "laranja"
+				jogador_cor_numero = 1
+				pare
+				
+			caso 2:
+				jogador_sprite = sprite_slime_amarelo
+				jogador_cor = "amarelo"
+				jogador_cor_numero = 2
+				pare
+				
+			caso 3:
+				jogador_sprite = sprite_slime_verde
+				jogador_cor = "verde"
+				jogador_cor_numero = 3
+				pare
+				
+			caso 4:
+				jogador_sprite = sprite_slime_azul
+				jogador_cor = "azul"
+				jogador_cor_numero = 4
+				pare
+				
+			caso 5:
+				jogador_sprite = sprite_slime_ciano
+				jogador_cor = "ciano"
+				jogador_cor_numero = 5
+				pare
+				
+			caso 6:
+				jogador_sprite = sprite_slime_roxo
+				jogador_cor = "roxo"
+				jogador_cor_numero = 6
+				pare
+				
+			caso 7:
+				jogador_sprite = sprite_slime_rosa
+				jogador_cor = "rosa"
+				jogador_cor_numero = 7
+				pare
+		}
 	}
 	funcao detectar_se_jogador_pegou_ponto(){
 		// Variáveis que serão usadas para detectar se o jogador está realmente em cima do ponto
@@ -711,12 +905,14 @@ programa
 		se(x e y){
 			pontuacao++
 			
+			tocar_som_ponto_coletado()
+			
 			// Reseta a pontuação do jogador quando ele atinge um valor maior que 999 pontos
 			se(pontuacao > 999){
 				pontuacao = 0
 			}
 			
-		   	sortear_nova_posicao_ponto = verdadeiro
+			sortear_nova_posicao_ponto = verdadeiro
 		}
 	}
 	funcao detectar_colisao_com_a_janela(){
@@ -735,6 +931,26 @@ programa
 		}
 	}
 
+	// Funções referentes aos sons
+	funcao tocar_som_ponto_coletado(){
+		se(configuracoes_efeitos_sonoros){
+			escolha(sorteia(1, 2)){
+				caso 1:
+					s.reproduzir_som(som_point_collected1, falso)
+					pare
+				
+				caso 2:
+					s.reproduzir_som(som_point_collected2, falso)
+					pare
+			}
+		}
+	}
+	funcao tocar_som_selecao_menu(){
+		se(configuracoes_efeitos_sonoros){
+			s.reproduzir_som(som_button_click, falso)
+		}
+	}
+	
 	// Funções referentes a interface
 	funcao cadeia interface_obter_tempo(){		
 		// Obtem um tempo para servir de base na primeira vez que a função é executada
@@ -769,43 +985,27 @@ programa
 		senao se(pontuacao < 100 e pontuacao >= 10){
 			pontos = "0" + pontos
 		}
-		se(maior_pontuacao < 100 e maior_pontuacao < 10){
-			maior_pontos = "00" + maior_pontos
-		}
-		senao se(maior_pontuacao < 100 e maior_pontuacao >= 10){
-			maior_pontos = "0" + maior_pontos
-		}
 		
-		// Desenha a pontuação e a maior pontuação do jogador
+		// Desenha a pontuação do jogador
 		g.definir_tamanho_texto(14.0)
-		se(pontuacao < maior_pontuacao){
-			g.desenhar_texto(10, 7, pontos + " | " + maior_pontos)
-		}
-		senao se(pontuacao >= maior_pontuacao){
-			g.desenhar_texto(10, 7, pontos)
-		}
-
-		// Atualiza a maior pontuação, caso necessario
-		atualizar_maior_pontuacao()
+		g.desenhar_texto(10, 7, pontos)
 	}
 	funcao interface_desenhar_fps(){
-		cadeia fps = fps_atual + ""
-
-		// Põe zeros(0) na frente do fps, caso ele for menor que 100 e/ou 10
-		se(fps_atual < 10){
-			fps = "00" + fps
-		}
-		senao se(fps_atual < 100){
-			fps = "0" + fps
-		}
-		
-		// Desenha o fps atual
-		g.definir_tamanho_texto(14.0)
-		g.desenhar_texto(lar - 10 - (g.altura_texto("A") * tx.numero_caracteres("FPS: " + fps)),
-		7, "FPS: " + fps)
+		g.desenhar_texto(lar - 10 - (g.altura_texto("A") * tx.numero_caracteres("FPS: " + fps_atual)),
+		7, "FPS: " + fps_atual)
 	}
 
 	// Funções referentes a carregar arquivos
+	funcao carregar_todos_os_arquivos(){
+		desenhar_texto_carregamento_de_arquivos("Fontes")
+		carregar_fontes()
+		desenhar_texto_carregamento_de_arquivos("Sons")
+		carregar_sons()
+		desenhar_texto_carregamento_de_arquivos("Arquivos")
+		carregar_arquivos()
+		desenhar_texto_carregamento_de_arquivos("Imagens")
+		carregar_imagens()
+	}
 	funcao carregar_arquivos(){
 		// Carrega o arquivo de configurações
 		se(a.arquivo_existe(pasta_config + "/config.config")){
@@ -820,23 +1020,10 @@ programa
 		senao{
 			erro_arquivos()
 		}
-
-		// Carrega o arquivo de pontuações
-		se(a.arquivo_existe(pasta_config + "/pontuacao.config")){
-			// Lê o arquivo de pontuação e passa o código json para uma variável
-			arquivo_pontuacao = a.abrir_arquivo(pasta_config + "/pontuacao.config", a.MODO_LEITURA)
-			cadeia json_pontuacao = ""
-			enquanto(nao a.fim_arquivo(arquivo_pontuacao)){
-				json_pontuacao += a.ler_linha(arquivo_pontuacao)
-			}
-			obj_pontuacao = o.criar_objeto_via_json("{" + json_pontuacao + "}")
-			maior_pontuacao = tp.cadeia_para_inteiro(o.obter_propriedade_tipo_cadeia(obj_pontuacao, "maior_pontuacao"), 10)
-		}
-		senao{
-			erro_arquivos()
-		}
-
-		// Carrega os arquivos referentes a linguagens
+		
+		console("Arquivos: arquivos carregados.")
+		
+		// Carrega os arquivos referentes a idiomas
 		se(a.arquivo_existe(pasta_lang + "/pt_br.lang") e a.arquivo_existe(pasta_lang + "/en_us.lang")){
 			pt_br = a.abrir_arquivo(pasta_lang + "/pt_br.lang", a.MODO_LEITURA)
 			en_us = a.abrir_arquivo(pasta_lang + "/en_us.lang", a.MODO_LEITURA)
@@ -852,6 +1039,8 @@ programa
 				obj_lang_en_us += a.ler_linha(en_us)
 			}
 			lang_en_us = o.criar_objeto_via_json("{" + obj_lang_en_us + "}")
+
+			console("Arquivos: arquivos de idioma carregados.")
 		}
 		senao{
 			erro_arquivos()
@@ -859,7 +1048,6 @@ programa
 		
 		se(nao erro_carregamento_arquivos){
 			a.fechar_arquivo(arquivo_configuracoes)
-			a.fechar_arquivo(arquivo_pontuacao)
 			a.fechar_arquivo(pt_br)
 			a.fechar_arquivo(en_us)
 		}
@@ -869,14 +1057,37 @@ programa
 		menu_config_button = g.carregar_imagem(pasta_menus + "/buttons/config_button.png")
 		menu_quit_button = g.carregar_imagem(pasta_menus + "/buttons/quit_button.png")
 		sprite_fantasma_cinza = g.carregar_imagem(pasta_sprites + "/fantasma_cinza.png")
+		customizacao_slime_vermelho = g.carregar_imagem(pasta_customizacao + "/slime_vermelho.png")
+		customizacao_slime_laranja = g.carregar_imagem(pasta_customizacao + "/slime_laranja.png")
+		customizacao_slime_amarelo = g.carregar_imagem(pasta_customizacao + "/slime_amarelo.png")
+		customizacao_slime_verde = g.carregar_imagem(pasta_customizacao + "/slime_verde.png")
+		customizacao_slime_azul = g.carregar_imagem(pasta_customizacao + "/slime_azul.png")
+		customizacao_slime_ciano = g.carregar_imagem(pasta_customizacao + "/slime_ciano.png")
+		customizacao_slime_roxo = g.carregar_imagem(pasta_customizacao + "/slime_roxo.png")
+		customizacao_slime_rosa = g.carregar_imagem(pasta_customizacao + "/slime_rosa.png")
+		sprite_slime_vermelho = g.carregar_imagem(pasta_sprites + "/slime_vermelho.png")
+		sprite_slime_laranja = g.carregar_imagem(pasta_sprites + "/slime_laranja.png")
+		sprite_slime_amarelo = g.carregar_imagem(pasta_sprites + "/slime_amarelo.png")
+		sprite_slime_verde = g.carregar_imagem(pasta_sprites + "/slime_verde.png")
+		sprite_slime_azul = g.carregar_imagem(pasta_sprites + "/slime_azul.png")
+		sprite_slime_ciano = g.carregar_imagem(pasta_sprites + "/slime_ciano.png")
+		sprite_slime_roxo = g.carregar_imagem(pasta_sprites + "/slime_roxo.png")
+		sprite_slime_rosa = g.carregar_imagem(pasta_sprites + "/slime_rosa.png")
+		
+		console("Imagens: imagens carregadas.")
 	}
 	funcao carregar_fontes(){
 		// Carrega as fontes
 		g.carregar_fonte(pasta_fonts + "/PressStart2P.ttf")
 		g.definir_fonte_texto("Press Start 2P")
+		
+		console("Fontes: fontes carregadas.")
 	}
 	funcao carregar_sons(){
 		som_button_click = s.carregar_som(pasta_sons + "/sfx/button_click.mp3")
+		som_point_collected1 = s.carregar_som(pasta_sons + "/sfx/point_collected1.mp3")
+		som_point_collected2 = s.carregar_som(pasta_sons + "/sfx/point_collected2.mp3")
+		console("Sons: sons carregados.")
 	}
 
 	// Funções referentes a liberar arquivos
@@ -884,9 +1095,28 @@ programa
 		g.liberar_imagem(menu_play_button)
 		g.liberar_imagem(menu_config_button)
 		g.liberar_imagem(menu_quit_button)
+		g.liberar_imagem(sprite_fantasma_cinza)
+		g.liberar_imagem(customizacao_slime_vermelho)
+		g.liberar_imagem(customizacao_slime_laranja)
+		g.liberar_imagem(customizacao_slime_amarelo)
+		g.liberar_imagem(customizacao_slime_verde)
+		g.liberar_imagem(customizacao_slime_azul)
+		g.liberar_imagem(customizacao_slime_ciano)
+		g.liberar_imagem(customizacao_slime_roxo)
+		g.liberar_imagem(customizacao_slime_rosa)
+		g.liberar_imagem(sprite_slime_vermelho)
+		g.liberar_imagem(sprite_slime_laranja)
+		g.liberar_imagem(sprite_slime_amarelo)
+		g.liberar_imagem(sprite_slime_verde)
+		g.liberar_imagem(sprite_slime_azul)
+		g.liberar_imagem(sprite_slime_ciano)
+		g.liberar_imagem(sprite_slime_roxo)
+		g.liberar_imagem(sprite_slime_rosa)
 	}
 	funcao liberar_sons(){
 		s.liberar_som(som_button_click)
+		s.liberar_som(som_point_collected1)
+		s.liberar_som(som_point_collected2)
 	}
 
 	// Funções referentes a lingua do jogo
@@ -905,6 +1135,21 @@ programa
 		}
 	}
 
-	// Funções referentes aos mapas do jogo
-	// ...
+	// Funções referentes aos mapas da fase
+	funcao desenhar_fase(){
+		definir_tipo_da_fase()
+		desenhar_objetos_fase()
+	}
+	funcao definir_tipo_da_fase(){
+		cadeia tipo_da_fase = o.obter_propriedade_tipo_cadeia(objeto_json_fase(1), "tipo")
+		se(tipo_da_fase == "grama"){
+			g.definir_cor(g.COR_VERDE)
+		}
+	}
+	funcao desenhar_objetos_fase(){
+		
+	}
+	funcao inteiro objeto_json_fase(inteiro numero_fase){
+		retorne o.criar_objeto_via_json(conteudo_arquivo_json(a.abrir_arquivo(pasta_fases + "/fase" + numero_fase + ".json", a.MODO_LEITURA)))
+	}
 }
