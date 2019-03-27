@@ -1,0 +1,4 @@
+"titulo": "Grama I",
+"tipo": "grama",
+"inimigos": ["fantasma_cinza"],
+"retangulo_1": [100, 100, 50, 50]
