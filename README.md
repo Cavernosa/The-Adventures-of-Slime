@@ -2,10 +2,13 @@
 [![banner](https://github.com/Mateus-Hirt/The-Adventures-of-Slime/blob/master/slime-banner_.png)](https://github.com/Mateus-Hirt/The-Adventures-of-Slime)
 Este projeto tem como objetivo a criação de um jogo em portugol 2.0, utilizando a IDE Portugol Studio.
 
+---
 
 ## Como posso jogar?
-Primeiramente, baixe os arquivos do jogo clicando no botão abaixo, e execute no modo gráfico o arquivo `game.por` que estará na pasta do jogo.
-Ao iniciar o jogo, irá aparecer uma janela de seleção de arquivo. Selecione o arquivo `ME SELECIONE.selecione` que está na pasta do jogo, e aproveite a jogatina. :rocket:
+Primeiramente, baixe os arquivos do jogo clicando no botão abaixo;
+Descompacte o arquivo zip com um descompactador, como o WinRAR;
+Execute no modo gráfico o arquivo `game.por` que estará na pasta do jogo.
+Pronto. Você já estará jogando The Adventures of Slime! :rocket:
 
 **OBS:** O jogo não está completo, está em versão **alfa**! O jogo completo pode(e será) diferente desta versão.
 
@@ -14,3 +17,8 @@ Ao iniciar o jogo, irá aparecer uma janela de seleção de arquivo. Selecione o
 **OBS:** Para jogar o jogo você deve ter o Portugol Studio instalado em seu computador. Clique abaixo para ir até o site do Portugol e baixá-lo.
 
 [![Portugol Studio](https://img.shields.io/badge/Site-Portugol_Studio-4169E1.svg?style=for-the-badge&logo=html5)](http://lite.acad.univali.br/portugol/)
+
+---
+
+## Como posso ajudar no projeto?
+Caso queira ajudar no desenvolvimento deste projeto, não heside em relatar problemas ou dar sugestôes através das [issues](https://github.com/Mateus-Hirt/The-Adventures-of-Slime/issues).
