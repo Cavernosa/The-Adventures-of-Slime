@@ -14,7 +14,7 @@ programa
 	// Configurações de jogo
 	cadeia configuracoes_lingua = "Português (BR)"
 	
-	logico configuracoes_musica = falso,
+	logico configuracoes_musica = verdadeiro,
 	configuracoes_efeitos_sonoros = verdadeiro
 	
 	inteiro taxa_fps_maxima = 0
@@ -44,7 +44,6 @@ programa
 	},
 	pasta_sprites = "/sprites",
 	pasta_fonts = "/fonts",
-	pasta_pontos = "/points",
 	pasta_menus = "/menus",
 	pasta_config = "/config",
 	pasta_lang = "/lang",
@@ -112,16 +111,10 @@ programa
 	// Ponto
 	cadeia ponto_cor = "vermelho"
 	inteiro maior_pontuacao = 0,
-	ponto_sprite = g.carregar_imagem(pasta_pontos + "/ponto_" + ponto_cor + ".png"),
+	ponto_sprite = g.carregar_imagem(pasta_sprites + "/ponto_" + ponto_cor + ".png"),
 	ponto_tamanho = g.altura_imagem(ponto_sprite),
 	ponto_posicao[2]
 	logico sortear_nova_posicao_ponto = verdadeiro
-
-	// Inimigos
-	const inteiro numero_de_inimigos = 2
-	inteiro posicao_inimigos = o.criar_objeto(),
-	posicao_inimigo[numero_de_inimigos][2],
-	tipo_inimigos = o.criar_objeto_via_json("{\"inimigo_1\": \"fantasma_cinza\"}")
 
 	// Funções principais
 	funcao finalizar(){
@@ -140,8 +133,6 @@ programa
 
 		// Carrega os arquivos
 		carregar_todos_os_arquivos()
-
-		definir_posicao_inimigo(1, "fantasma_cinza")
 		
 		// Loop responsável por fazer o programa funcionar
 		enquanto(executando){
@@ -223,26 +214,11 @@ programa
 	}
 
 	// Funções referentes aos desenhos
-	funcao desenhar_sprite_inimigo(cadeia tipo_do_inimigo, inteiro numero_do_inimigo, logico inimigo_virado_para_a_direita){
-		se(tipo_do_inimigo == "fantasma_cinza" e inimigo_virado_para_a_direita){
-			g.desenhar_porcao_imagem(json_inimigo_posicao(numero_do_inimigo, "x"),
-			json_inimigo_posicao(numero_do_inimigo, "y"), 0, 0,
-			g.largura_imagem(sprite_fantasma_cinza) / 2, g.altura_imagem(sprite_fantasma_cinza), sprite_fantasma_cinza)
-		}
-		senao se(tipo_do_inimigo == "fantasma_cinza" e nao inimigo_virado_para_a_direita){
-			g.desenhar_porcao_imagem(json_inimigo_posicao(numero_do_inimigo, "x"),
-			json_inimigo_posicao(numero_do_inimigo, "y"), g.largura_imagem(sprite_fantasma_cinza) / 2, 0,
-			g.largura_imagem(sprite_fantasma_cinza) / 2, g.altura_imagem(sprite_fantasma_cinza), sprite_fantasma_cinza)
-		}
-	}
 	funcao desenhar_texto_carregamento_de_arquivos(cadeia texto){
 		g.definir_cor(janela_cor_fundo_interface)
 		centralizar_texto(alt / 2, "CARREGANDO ARQUIVOS")
 		centralizar_texto(alt / 2 + (2 * g.altura_texto("A")), "Carregando: " + texto)
 		g.renderizar()
-	}
-	funcao desenhar_inimigo(inteiro numero_do_inimigo){
-		desenhar_sprite_inimigo(o.obter_propriedade_tipo_cadeia(tipo_inimigos, "inimigo_" + numero_do_inimigo), numero_do_inimigo, verdadeiro)
 	}
 	funcao desenhar_interface(){
 		// Desenha o retângulo de fundo
@@ -505,13 +481,11 @@ programa
 			
 		// Funções referentes a movimentação
 		movimento_jogador()
-		movimento_inimigo(1)
 		detectar_colisao_com_a_janela()
 		
 		// Funções referentes a desenhos
 		desenhar_fase()
 		desenhar_ponto()
-		desenhar_inimigo(1)
 		desenhar_jogador()
 		desenhar_interface()
 		
@@ -568,26 +542,7 @@ programa
 		ponto_posicao[1] = sorteio_y
 	}
 
-	// Funções referentes a movimentação
-	funcao movimento_inimigo(inteiro numero_do_inimigo){
-		inteiro num[2] = {
-			json_inimigo_posicao(numero_do_inimigo, "x"),
-			json_inimigo_posicao(numero_do_inimigo, "y")
-		}
-
-		se(jogador_posicao[0] > num[0]){
-			o.atribuir_propriedade(posicao_inimigos, "inimigo_" + numero_do_inimigo + "_x", num[0] + 1)
-		}
-		senao se(jogador_posicao[0] < num[0]){
-			o.atribuir_propriedade(posicao_inimigos, "inimigo_" + numero_do_inimigo + "_x", num[0] - 1)
-		}
-		se(jogador_posicao[1] > num[1]){
-			o.atribuir_propriedade(posicao_inimigos, "inimigo_" + numero_do_inimigo + "_y", num[1] + 1)
-		}
-		senao se(jogador_posicao[1] < num[1]){
-			o.atribuir_propriedade(posicao_inimigos, "inimigo_" + numero_do_inimigo + "_y", num[1] - 1)
-		}
-	}
+	// Funções referentes à movimentação
 	funcao movimento_jogador(){
 		se(lar <= 750){
 			jogador_velocidade = 1
@@ -612,7 +567,7 @@ programa
 		}
 	}
 
-	// Funções referentes a configurações
+	// Funções referentes à configurações
 	funcao funcoes_teclado(){
 		// Salva uma captura de tela na pasta do jogo
 		se(t.tecla_pressionada(t.TECLA_F2)){
@@ -670,15 +625,6 @@ programa
 			enquanto(t.alguma_tecla_pressionada()){}
 		}
 	}
-	funcao definir_posicao_inimigo(inteiro numero_do_inimigo, cadeia tipo_do_inimigo){
-		se(tipo_do_inimigo == "fantasma_cinza"){
-			o.atribuir_propriedade(posicao_inimigos, "inimigo_" + numero_do_inimigo + "_x", lar / 2 - (g.largura_imagem(sprite_fantasma_cinza) / 2) / 2)
-			o.atribuir_propriedade(posicao_inimigos, "inimigo_" + numero_do_inimigo + "_y", alt / 2 - g.altura_imagem(sprite_fantasma_cinza) / 2)
-		}
-	}
-	funcao inteiro json_inimigo_posicao(inteiro numero_do_inimigo, cadeia x_y){
-		retorne o.obter_propriedade_tipo_inteiro(posicao_inimigos, "inimigo_" + numero_do_inimigo + "_" + x_y)
-	}
 	funcao cadeia conteudo_arquivo_json(inteiro arquivo){
 		cadeia json = ""
 		enquanto(nao a.fim_arquivo(arquivo)){
@@ -713,7 +659,7 @@ programa
 		}
 	}
 
-	// Funções referentes a detecções
+	// Funções referentes à detecções
 	funcao inteiro detectar_se_jogador_selecionou_botao_configuracoes(){
 		inteiro x = m.posicao_x(), y = m.posicao_y()
 		inteiro botao_pressionado = -1
@@ -951,7 +897,7 @@ programa
 		}
 	}
 	
-	// Funções referentes a interface
+	// Funções referentes à interface
 	funcao cadeia interface_obter_tempo(){		
 		// Obtem um tempo para servir de base na primeira vez que a função é executada
 		se(contador_tempo_obter_tempo){
@@ -995,7 +941,7 @@ programa
 		7, "FPS: " + fps_atual)
 	}
 
-	// Funções referentes a carregar arquivos
+	// Funções referentes à carregar arquivos
 	funcao carregar_todos_os_arquivos(){
 		desenhar_texto_carregamento_de_arquivos("Fontes")
 		carregar_fontes()
@@ -1090,7 +1036,7 @@ programa
 		console("Sons: sons carregados.")
 	}
 
-	// Funções referentes a liberar arquivos
+	// Funções referentes à liberar arquivos
 	funcao liberar_imagens(){
 		g.liberar_imagem(menu_play_button)
 		g.liberar_imagem(menu_config_button)
@@ -1119,7 +1065,7 @@ programa
 		s.liberar_som(som_point_collected2)
 	}
 
-	// Funções referentes a lingua do jogo
+	// Funções referentes à lingua do jogo
 	funcao cadeia lang_json(cadeia propriedade){
 		retorne o.obter_propriedade_tipo_cadeia(lingua_escolhida(), propriedade)
 	}
@@ -1135,7 +1081,7 @@ programa
 		}
 	}
 
-	// Funções referentes aos mapas da fase
+	// Funções referentes às fases
 	funcao desenhar_fase(){
 		definir_tipo_da_fase()
 		desenhar_objetos_fase()
