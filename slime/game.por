@@ -1,5 +1,4 @@
-programa
-{
+programa{
 	inclua biblioteca Calendario --> c
 	inclua biblioteca Graficos --> g
 	inclua biblioteca Arquivos --> a
@@ -23,9 +22,8 @@ programa
 	inteiro janela[] = {800, 600},
 	lar = janela[0],
 	alt = janela[1],
-	janela_cor_fundo = 0x202030,
-	janela_cor_fundo_interface = 0xB0C4DE,
-	janela_cor_conteudo_interface = janela_cor_fundo,
+	janela_cor_preto = 0x202030,
+	janela_cor_cinza = 0xB0C4DE,
 	MENU = 0, CONFIGURACOES = 1, CUSTOMIZACAO_DE_PERSONAGEM = 2, JOGO = 3,
 	tela_atual = MENU,
 	fase_atual = 1,
@@ -35,21 +33,15 @@ programa
 	fps_tempo_inicio = 0,
 	fps_taxa = 0,
 	fps_atual = 0
-
 	
-	cadeia nome_personagem[3] = {
-		"Slimey",
-		"Goop",
-		"Slurry"
-	},
-	pasta_sprites = "/sprites",
+	cadeia pasta_sprites = "/sprites",
+	pasta_imagens = "/imagens",
 	pasta_fonts = "/fonts",
-	pasta_menus = "/menus",
 	pasta_config = "/config",
 	pasta_lang = "/lang",
 	pasta_sons ="/sons",
 	pasta_fases = "/fases",
-	pasta_customizacao = "/customizacao"
+	pasta_customizacao = pasta_imagens + "/customizacao"
 	
 	logico contador_tempo_obter_tempo = verdadeiro,
 	fps_obter_tempo = verdadeiro,
@@ -86,7 +78,17 @@ programa
 	sprite_slime_azul = 0,
 	sprite_slime_ciano = 0,
 	sprite_slime_roxo = 0,
-	sprite_slime_rosa = 0
+	sprite_slime_rosa = 0,
+	tutorial_tecla_w = 0,
+	tutorial_tecla_a = 0,
+	tutorial_tecla_s = 0,
+	tutorial_tecla_d = 0,
+	tutorial_tecla_seta = 0,
+	tutorial_tecla_w_ativa = 0,
+	tutorial_tecla_a_ativa = 0,
+	tutorial_tecla_s_ativa = 0,
+	tutorial_tecla_d_ativa = 0,
+	tutorial_tecla_seta_ativa = 0
 
 	// Sons
 	inteiro som_button_click = 0,
@@ -115,6 +117,13 @@ programa
 	ponto_tamanho = g.altura_imagem(ponto_sprite),
 	ponto_posicao[2]
 	logico sortear_nova_posicao_ponto = verdadeiro
+
+	// Tutorial
+	logico tutorial_tecla_pressionada_w = falso,
+	tutorial_tecla_pressionada_a = falso,
+	tutorial_tecla_pressionada_s = falso,
+	tutorial_tecla_pressionada_d = falso
+	inteiro parte_do_tutorial = 1
 
 	// Funções principais
 	funcao finalizar(){
@@ -179,7 +188,7 @@ programa
 			obter_fps()
 			
 			// Define a cor de fundo da janela
-			g.definir_cor(janela_cor_fundo)
+			g.definir_cor(janela_cor_preto)
 			g.limpar()
 			
 			// Esta é a tela de menu
@@ -215,18 +224,18 @@ programa
 
 	// Funções referentes aos desenhos
 	funcao desenhar_texto_carregamento_de_arquivos(cadeia texto){
-		g.definir_cor(janela_cor_fundo_interface)
+		g.definir_cor(janela_cor_cinza)
 		centralizar_texto(alt / 2, "CARREGANDO ARQUIVOS")
 		centralizar_texto(alt / 2 + (2 * g.altura_texto("A")), "Carregando: " + texto)
 		g.renderizar()
 	}
 	funcao desenhar_interface(){
 		// Desenha o retângulo de fundo
-		g.definir_cor(janela_cor_fundo_interface)
+		g.definir_cor(janela_cor_cinza)
 		g.desenhar_retangulo(0, 0, lar, 25, falso, verdadeiro)
 
 		// Define a cor do conteúdo a ser desenhado na interface
-		g.definir_cor(janela_cor_conteudo_interface)
+		g.definir_cor(janela_cor_preto)
 
 		// Desenhos da interface
 		interface_desenhar_pontuacao()
@@ -251,7 +260,7 @@ programa
 	
 	// Funções referentes às telas
 	funcao customizacao_de_personagem(){
-		g.definir_cor(janela_cor_fundo_interface)
+		g.definir_cor(janela_cor_cinza)
 		g.definir_tamanho_texto(20.0)
 		centralizar_texto((alt / 4) / 4, lang_json("customizacao_de_personagem_customizacao_de_personagem"))
 		
@@ -309,10 +318,10 @@ programa
 		}
 
 		customizacao_desenhar_cores_cor_slime()
-		g.definir_cor(janela_cor_fundo_interface)
+		g.definir_cor(janela_cor_cinza)
 		
 		g.desenhar_retangulo(lar - 190, alt - 50, 175, 35, verdadeiro, verdadeiro)
-		g.definir_cor(janela_cor_fundo)
+		g.definir_cor(janela_cor_preto)
 		g.definir_tamanho_texto(18.0)
 		g.desenhar_texto((lar - 100) - (g.altura_texto("A") * tx.numero_caracteres(lang_json("customizacao_de_personagem_concluido"))) / 2, alt - 42, lang_json("customizacao_de_personagem_concluido"))
 
@@ -320,19 +329,19 @@ programa
 		detectar_se_jogador_selecionou_botao_customizacao_de_personagem()
 	}
 	funcao configuracoes(){
-		g.definir_cor(janela_cor_fundo_interface)
+		g.definir_cor(janela_cor_cinza)
 		g.definir_tamanho_texto(20.0)
 		centralizar_texto((alt / 4) / 4, lang_json("menu_configuracoes"))
 
 		// Desenha o botão de voltar
-		g.definir_cor(janela_cor_fundo_interface)
+		g.definir_cor(janela_cor_cinza)
 		g.desenhar_retangulo(lar - 60, 10, 50, 27, falso, verdadeiro)
-		g.definir_cor(janela_cor_conteudo_interface)
+		g.definir_cor(janela_cor_preto)
 		g.definir_tamanho_texto(25.0)
 		g.desenhar_texto(lar - 45, 12, ">")
 
 		// Desenha os textos de configuração
-		g.definir_cor(janela_cor_fundo_interface)
+		g.definir_cor(janela_cor_cinza)
 		g.definir_tamanho_texto(12.0)
 		inteiro x = 25
 
@@ -408,11 +417,11 @@ programa
 		erro_carregamento_arquivos = verdadeiro
 
 		// Define a cor de fundo
-		g.definir_cor(janela_cor_fundo)
+		g.definir_cor(janela_cor_preto)
 		g.limpar()
 		
 		// Escreve os textos informativos
-		g.definir_cor(janela_cor_fundo_interface)
+		g.definir_cor(janela_cor_cinza)
 		centralizar_texto(alt / 4, "[!] FALHA NO CARREGAMENTO DOS ARQUIVOS DO JOGO [!]")
 		centralizar_texto(alt / 2 - g.altura_texto("A") / 2, "Parece que há alguns arquivos faltando na pasta do jogo.")
 		centralizar_texto(alt / 2 - g.altura_texto("A") / 2 + g.altura_texto("A") * 4, "1. Verifique se não mudou o diretório de alguma pasta ou arquivo;")
@@ -426,27 +435,11 @@ programa
 		finalizar()
 		executando = falso
 	}
-	funcao tutorial(){
-		// Exibe o texto do tutorial até que o jogador colete um ponto
-		se(pontuacao == 0){
-			g.definir_cor(0xffffff)
-			g.definir_tamanho_texto(14.0)
-			centralizar_texto(50, lang_json("tutorial_1"))
-			centralizar_texto(50 + g.altura_texto("A") + 5, lang_json("tutorial_2"))
-			centralizar_texto(50 + (g.altura_texto("A") + 5) * 2, lang_json("tutorial_3"))
-			centralizar_texto(50 + (g.altura_texto("A") + 5) * 3, lang_json("tutorial_4"))
-		}
-
-		// Caso o jogador colete um ponto, o tutorial se finaliza
-		senao{
-			exibir_tutorial = falso
-		}
-	}
 	funcao menu(){
 		g.definir_tamanho_texto(12.0)
 		
 		// Define a cor do texto dos botôes
-		g.definir_cor(janela_cor_fundo_interface)
+		g.definir_cor(janela_cor_cinza)
 		
 		// Desenha o botão de jogar
 		g.desenhar_imagem(lar / 2 - 75, alt / 2, menu_play_button)
@@ -470,28 +463,158 @@ programa
 		detectar_se_jogador_selecionou_botao_menu()
 	}
 	funcao jogo(){
-		// Sorteia uma nova posição do ponto, caso necessário
-		se(sortear_nova_posicao_ponto){
-			sortear_nova_posicao_ponto = falso
-			sortear_posicao_ponto()
-		}
-			
-		// Funções referentes a eventos
-		detectar_se_jogador_pegou_ponto()
-			
-		// Funções referentes a movimentação
-		movimento_jogador()
-		detectar_colisao_com_a_janela()
-		
-		// Funções referentes a desenhos
-		desenhar_fase()
-		desenhar_ponto()
-		desenhar_jogador()
-		desenhar_interface()
-		
 		// Inicia o tutorial, caso ainda não tenha sido iniciado
 		se(exibir_tutorial){
 			tutorial()
+		}
+		
+		senao{
+			// Sorteia uma nova posição do ponto, caso necessário
+			se(sortear_nova_posicao_ponto){
+				sortear_nova_posicao_ponto = falso
+				sortear_posicao_ponto()
+			}
+				
+			// Funções referentes a eventos
+			detectar_se_jogador_pegou_ponto()
+				
+			// Funções referentes a movimentação
+			movimento_jogador()
+			detectar_colisao_com_a_janela()
+			
+			// Funções referentes a desenhos
+			desenhar_fase()
+			desenhar_ponto()
+			desenhar_jogador()
+			desenhar_interface()
+		}
+	}
+
+	// Funções referentes ao tutorial
+	funcao tutorial(){
+		tecla_pressionada_tutorial()
+		detectar_parte_tutorial_completa()
+		desenhar_texto_tutorial()
+		
+		desenhar_jogador()
+		movimento_jogador()
+		
+		desenhar_imagens_tutorial()
+	}
+	funcao desenhar_texto_tutorial(){
+		g.definir_cor(janela_cor_cinza)
+		g.definir_tamanho_texto(20.0)
+		centralizar_texto((alt / 4) / 4, lang_json("tutorial_tutorial"))
+		
+		g.definir_tamanho_texto(12.0)
+		escolha(parte_do_tutorial){
+			caso 1:
+				centralizar_texto(((alt / 4) / 2) - 12, lang_json("tutorial_movimentacao"))
+				pare
+				
+			caso 2:
+				centralizar_texto(((alt / 4) / 2) - 12, lang_json("tutorial_parte2_str"))
+				pare
+		}
+	}
+	funcao desenhar_imagens_tutorial(){
+		escolha(parte_do_tutorial){
+			caso 1:
+				// Desenha o retângulo que divide os comandos
+				g.desenhar_retangulo(lar / 2 - 2, ((alt / 4) / 2) + 10, 4, 80, falso, verdadeiro)
+
+				se(nao tutorial_tecla_pressionada_w){
+					g.desenhar_imagem(lar / 2 - g.largura_imagem(tutorial_tecla_w) * 2 - 37, ((alt / 4) / 2) + 10 + 15, tutorial_tecla_w)
+					
+					g.desenhar_imagem(lar / 2 + g.largura_imagem(tutorial_tecla_w) * 2 + 14, ((alt / 4) / 2) + 10 + 15, tutorial_tecla_seta)
+				}
+				senao{
+					g.desenhar_imagem(lar / 2 - g.largura_imagem(tutorial_tecla_w) * 2 - 37, ((alt / 4) / 2) + 10 + 15, tutorial_tecla_w_ativa)
+					
+					g.desenhar_imagem(lar / 2 + g.largura_imagem(tutorial_tecla_w) * 2 + 14, ((alt / 4) / 2) + 10 + 15, tutorial_tecla_seta_ativa)
+				}
+				
+				se(nao tutorial_tecla_pressionada_a){
+					g.definir_rotacao(0)
+					g.desenhar_imagem(lar / 2 - g.largura_imagem(tutorial_tecla_a) * 3 - 42, ((alt / 4) / 2) + 30 + g.altura_imagem(tutorial_tecla_a), tutorial_tecla_a)
+					
+					g.definir_rotacao(-90)
+					g.desenhar_imagem(lar / 2 + g.largura_imagem(tutorial_tecla_d) * 1 + 9, ((alt / 4) / 2) + 30 + g.altura_imagem(tutorial_tecla_d), tutorial_tecla_seta)
+				}
+				senao{
+					g.definir_rotacao(0)
+					g.desenhar_imagem(lar / 2 - g.largura_imagem(tutorial_tecla_a) * 3 - 42, ((alt / 4) / 2) + 30 + g.altura_imagem(tutorial_tecla_a), tutorial_tecla_a_ativa)
+					
+					g.definir_rotacao(-90)
+					g.desenhar_imagem(lar / 2 + g.largura_imagem(tutorial_tecla_d) * 1 + 9, ((alt / 4) / 2) + 30 + g.altura_imagem(tutorial_tecla_d), tutorial_tecla_seta_ativa)
+				}
+				
+				se(nao tutorial_tecla_pressionada_s){
+					g.definir_rotacao(0)
+					g.desenhar_imagem(lar / 2 - g.largura_imagem(tutorial_tecla_s) * 2 - 37, ((alt / 4) / 2) + 30 + g.altura_imagem(tutorial_tecla_s), tutorial_tecla_s)
+					
+					g.definir_rotacao(180)
+					g.desenhar_imagem(lar / 2 + g.largura_imagem(tutorial_tecla_s) * 2 + 15, ((alt / 4) / 2) + 30 + g.altura_imagem(tutorial_tecla_s), tutorial_tecla_seta)
+				}
+				senao{
+					g.definir_rotacao(0)
+					g.desenhar_imagem(lar / 2 - g.largura_imagem(tutorial_tecla_s) * 2 - 37, ((alt / 4) / 2) + 30 + g.altura_imagem(tutorial_tecla_s), tutorial_tecla_s_ativa)
+					
+					g.definir_rotacao(180)
+					g.desenhar_imagem(lar / 2 + g.largura_imagem(tutorial_tecla_s) * 2 + 15, ((alt / 4) / 2) + 30 + g.altura_imagem(tutorial_tecla_s), tutorial_tecla_seta_ativa)
+				}
+				
+				se(nao tutorial_tecla_pressionada_d){
+					g.definir_rotacao(0)
+					g.desenhar_imagem(lar / 2 - g.largura_imagem(tutorial_tecla_d) * 1 - 32, ((alt / 4) / 2) + 30 + g.altura_imagem(tutorial_tecla_d), tutorial_tecla_d)
+					
+					g.definir_rotacao(90)
+					g.desenhar_imagem(lar / 2 + g.largura_imagem(tutorial_tecla_a) * 3 + 20, ((alt / 4) / 2) + 30 + g.altura_imagem(tutorial_tecla_a), tutorial_tecla_seta)
+				}
+				senao{
+					g.definir_rotacao(0)
+					g.desenhar_imagem(lar / 2 - g.largura_imagem(tutorial_tecla_d) * 1 - 32, ((alt / 4) / 2) + 30 + g.altura_imagem(tutorial_tecla_d), tutorial_tecla_d_ativa)
+					
+					g.definir_rotacao(90)
+					g.desenhar_imagem(lar / 2 + g.largura_imagem(tutorial_tecla_a) * 3 + 20, ((alt / 4) / 2) + 30 + g.altura_imagem(tutorial_tecla_a), tutorial_tecla_seta_ativa)
+				}
+
+				g.definir_rotacao(0)				
+				pare
+				
+			caso 2:
+				pare
+		}
+	}
+	funcao detectar_parte_tutorial_completa(){
+		escolha(parte_do_tutorial){
+			caso 1:
+				se(tutorial_tecla_pressionada_w e tutorial_tecla_pressionada_a e tutorial_tecla_pressionada_s e tutorial_tecla_pressionada_d){
+					parte_do_tutorial = 2
+				}
+				pare
+
+			caso contrario:
+				inicio_de_jogo()
+				exibir_tutorial = falso
+				pare
+		}
+	}
+	funcao tecla_pressionada_tutorial(){
+		se(t.tecla_pressionada(t.TECLA_W) ou t.tecla_pressionada(t.TECLA_SETA_ACIMA)){
+			tutorial_tecla_pressionada_w = verdadeiro
+		}
+
+		se(t.tecla_pressionada(t.TECLA_S) ou t.tecla_pressionada(t.TECLA_SETA_ABAIXO)){
+			tutorial_tecla_pressionada_s = verdadeiro
+		}
+
+		se(t.tecla_pressionada(t.TECLA_A) ou t.tecla_pressionada(t.TECLA_SETA_ESQUERDA)){
+			tutorial_tecla_pressionada_a = verdadeiro
+		}
+		
+		se(t.tecla_pressionada(t.TECLA_D) ou t.tecla_pressionada(t.TECLA_SETA_DIREITA)){
+			tutorial_tecla_pressionada_d = verdadeiro
 		}
 	}
 
@@ -581,6 +704,13 @@ programa
 		}
 		
 		se(t.tecla_pressionada(t.TECLA_ESC) e (tela_atual == CUSTOMIZACAO_DE_PERSONAGEM ou tela_atual == JOGO)){
+			pontuacao = 0
+			jogador_posicao[0] = (lar / 2) - (jogador_tamanho[0] / 2)
+			jogador_posicao[1] = (alt / 2) - (jogador_tamanho[1] / 2)
+			jogador_virado_para_a_direita = verdadeiro
+			sortear_nova_posicao_ponto = verdadeiro
+			contador_tempo_obter_tempo = verdadeiro
+			contador_tempo_minutos = 0
 			tela_atual = MENU
 
 			// Loop que evita excessivos cliques do jogador na mesma tecla, sem alterar o movimento do personagem
@@ -589,13 +719,7 @@ programa
 
 		// Reseta o jogo atual e vai para a seleção de personagens
 		se(tela_atual == JOGO e t.tecla_pressionada(t.TECLA_R)){
-			pontuacao = 0
-			jogador_posicao[0] = (lar / 2) - (jogador_tamanho[0] / 2)
-			jogador_posicao[1] = (alt / 2) - (jogador_tamanho[1] / 2)
-			jogador_virado_para_a_direita = verdadeiro
-			sortear_nova_posicao_ponto = verdadeiro
-			contador_tempo_obter_tempo = verdadeiro
-			contador_tempo_minutos = 0
+			inicio_de_jogo()
 			tela_atual = CUSTOMIZACAO_DE_PERSONAGEM
 
 			// Loop que evita excessivos cliques do jogador na mesma tecla, sem alterar o movimento do personagem
@@ -608,7 +732,7 @@ programa
 			g.definir_cor(0x404040)
 			g.desenhar_retangulo(0, 0, lar, alt, falso, verdadeiro)
 			g.definir_opacidade(255)
-			g.definir_cor(janela_cor_fundo_interface)
+			g.definir_cor(janela_cor_cinza)
 			g.definir_tamanho_texto(45.0)
 			centralizar_texto(alt / 2 - g.altura_texto("A") / 2, "PAUSADO")
 			g.definir_tamanho_texto(14.0)
@@ -624,6 +748,15 @@ programa
 			// Loop que evita excessivos cliques do jogador na mesma tecla, sem alterar o movimento do personagem
 			enquanto(t.alguma_tecla_pressionada()){}
 		}
+	}
+	funcao inicio_de_jogo(){
+		pontuacao = 0
+		jogador_posicao[0] = (lar / 2) - (jogador_tamanho[0] / 2)
+		jogador_posicao[1] = (alt / 2) - (jogador_tamanho[1] / 2)
+		jogador_virado_para_a_direita = verdadeiro
+		sortear_nova_posicao_ponto = verdadeiro
+		contador_tempo_obter_tempo = verdadeiro
+		contador_tempo_minutos = 0
 	}
 	funcao cadeia conteudo_arquivo_json(inteiro arquivo){
 		cadeia json = ""
@@ -999,18 +1132,18 @@ programa
 		}
 	}
 	funcao carregar_imagens(){
-		menu_play_button = g.carregar_imagem(pasta_menus + "/buttons/play_button.png")
-		menu_config_button = g.carregar_imagem(pasta_menus + "/buttons/config_button.png")
-		menu_quit_button = g.carregar_imagem(pasta_menus + "/buttons/quit_button.png")
+		menu_play_button = g.carregar_imagem(pasta_imagens + "/buttons/play_button.png")
+		menu_config_button = g.carregar_imagem(pasta_imagens + "/buttons/config_button.png")
+		menu_quit_button = g.carregar_imagem(pasta_imagens + "/buttons/quit_button.png")
 		sprite_fantasma_cinza = g.carregar_imagem(pasta_sprites + "/fantasma_cinza.png")
-		customizacao_slime_vermelho = g.carregar_imagem(pasta_customizacao + "/slime_vermelho.png")
-		customizacao_slime_laranja = g.carregar_imagem(pasta_customizacao + "/slime_laranja.png")
-		customizacao_slime_amarelo = g.carregar_imagem(pasta_customizacao + "/slime_amarelo.png")
-		customizacao_slime_verde = g.carregar_imagem(pasta_customizacao + "/slime_verde.png")
-		customizacao_slime_azul = g.carregar_imagem(pasta_customizacao + "/slime_azul.png")
-		customizacao_slime_ciano = g.carregar_imagem(pasta_customizacao + "/slime_ciano.png")
-		customizacao_slime_roxo = g.carregar_imagem(pasta_customizacao + "/slime_roxo.png")
-		customizacao_slime_rosa = g.carregar_imagem(pasta_customizacao + "/slime_rosa.png")
+		customizacao_slime_vermelho = g.carregar_imagem(pasta_customizacao + "/slimes/slime_vermelho.png")
+		customizacao_slime_laranja = g.carregar_imagem(pasta_customizacao + "/slimes/slime_laranja.png")
+		customizacao_slime_amarelo = g.carregar_imagem(pasta_customizacao + "/slimes/slime_amarelo.png")
+		customizacao_slime_verde = g.carregar_imagem(pasta_customizacao + "/slimes/slime_verde.png")
+		customizacao_slime_azul = g.carregar_imagem(pasta_customizacao + "/slimes/slime_azul.png")
+		customizacao_slime_ciano = g.carregar_imagem(pasta_customizacao + "/slimes/slime_ciano.png")
+		customizacao_slime_roxo = g.carregar_imagem(pasta_customizacao + "/slimes/slime_roxo.png")
+		customizacao_slime_rosa = g.carregar_imagem(pasta_customizacao + "/slimes/slime_rosa.png")
 		sprite_slime_vermelho = g.carregar_imagem(pasta_sprites + "/slime_vermelho.png")
 		sprite_slime_laranja = g.carregar_imagem(pasta_sprites + "/slime_laranja.png")
 		sprite_slime_amarelo = g.carregar_imagem(pasta_sprites + "/slime_amarelo.png")
@@ -1019,6 +1152,16 @@ programa
 		sprite_slime_ciano = g.carregar_imagem(pasta_sprites + "/slime_ciano.png")
 		sprite_slime_roxo = g.carregar_imagem(pasta_sprites + "/slime_roxo.png")
 		sprite_slime_rosa = g.carregar_imagem(pasta_sprites + "/slime_rosa.png")
+		tutorial_tecla_w = g.carregar_imagem(pasta_imagens + "/tutorial/tecla_w.png")
+		tutorial_tecla_a = g.carregar_imagem(pasta_imagens + "/tutorial/tecla_a.png")
+		tutorial_tecla_s = g.carregar_imagem(pasta_imagens + "/tutorial/tecla_s.png")
+		tutorial_tecla_d = g.carregar_imagem(pasta_imagens + "/tutorial/tecla_d.png")
+		tutorial_tecla_seta = g.carregar_imagem(pasta_imagens + "/tutorial/tecla_seta.png")
+		tutorial_tecla_w_ativa = g.carregar_imagem(pasta_imagens + "/tutorial/tecla_w_ativa.png")
+		tutorial_tecla_a_ativa = g.carregar_imagem(pasta_imagens + "/tutorial/tecla_a_ativa.png")
+		tutorial_tecla_s_ativa = g.carregar_imagem(pasta_imagens + "/tutorial/tecla_s_ativa.png")
+		tutorial_tecla_d_ativa = g.carregar_imagem(pasta_imagens + "/tutorial/tecla_d_ativa.png")
+		tutorial_tecla_seta_ativa = g.carregar_imagem(pasta_imagens + "/tutorial/tecla_seta_ativa.png")
 		
 		console("Imagens: imagens carregadas.")
 	}
