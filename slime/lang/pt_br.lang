@@ -8,8 +8,7 @@
 "customizacao_de_personagem_customizacao_de_personagem": "CUSTOMIZAÇÃO DE PERSONAGEM",
 "customizacao_de_personagem_concluido": "Pronto >",
 "customizacao_de_personagem_cor_do_slime": "Cor do slime",
-"tutorial_1": "Movimente o slime usando WASD",
-"tutorial_2": "ou as SETAS DIRECIONAIS.",
-"tutorial_3": "Colete os pontos vermelhos",
-"tutorial_4": "para aumentar sua pontuação.",
+"tutorial_tutorial": "TUTORIAL",
+"tutorial_movimentacao": "Movimentação",
+"tutorial_parte2_str": "tutorial_parte2_str",
 "taxa_fps_maxima": "Taxa de FPS máxima"
