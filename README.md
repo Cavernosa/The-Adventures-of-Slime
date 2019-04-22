@@ -1,4 +1,4 @@
-# The Adventures of Slime [![alp 0.1.2](https://img.shields.io/badge/versão_atual-alpha_0.1.2-4169E1.svg)](https://github.com/Mateus-Hirt/JogoSlime/archive/master.zip)
+# The Adventures of Slime [![alp 0.1.2](https://img.shields.io/badge/versão_atual-alpha_0.1.3-4169E1.svg)](https://github.com/Mateus-Hirt/JogoSlime/archive/master.zip)
 [![banner](https://github.com/Mateus-Hirt/The-Adventures-of-Slime/blob/master/slime-banner_.png)](https://github.com/Mateus-Hirt/The-Adventures-of-Slime)
 Este projeto tem como objetivo a criação de um jogo em portugol 2.0, utilizando a IDE Portugol Studio.
 
