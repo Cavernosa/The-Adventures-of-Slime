@@ -93,20 +93,21 @@ programa{
 	// Sons
 	inteiro som_button_click = 0,
 	som_point_collected1 = 0,
-	som_point_collected2 = 0
+	som_point_collected2 = 0,
+	som_boss_fight = 0
 
 	// Jogador
 	cadeia jogador_cor = "verde"
 	inteiro jogador_cor_numero = 3
 	inteiro jogador_velocidade,
 	jogador_sprite = g.carregar_imagem(pasta_sprites + "/slime_" + jogador_cor + ".png"),
-	jogador_tamanho[2] = {
+	tamanho_jogador[2] = {
 		g.largura_imagem(jogador_sprite) / 2,
 		g.altura_imagem(jogador_sprite)
 	},
-	jogador_posicao[2] = {
-		(lar / 2) - (jogador_tamanho[0] / 2),
-		(alt / 2) - (jogador_tamanho[1] / 2)
+	posicao_jogador[2] = {
+		(lar / 2) - (tamanho_jogador[0] / 2),
+		(alt / 2) - (tamanho_jogador[1] / 2)
 	}
 	logico jogador_virado_para_a_direita = verdadeiro
 
@@ -114,8 +115,8 @@ programa{
 	cadeia ponto_cor = "vermelho"
 	inteiro maior_pontuacao = 0,
 	ponto_sprite = g.carregar_imagem(pasta_sprites + "/ponto_" + ponto_cor + ".png"),
-	ponto_tamanho = g.altura_imagem(ponto_sprite),
-	ponto_posicao[2]
+	tamanho_ponto = g.altura_imagem(ponto_sprite),
+	posicao_ponto[2]
 	logico sortear_nova_posicao_ponto = verdadeiro
 
 	// Tutorial
@@ -223,11 +224,25 @@ programa{
 	}
 
 	// Funções referentes aos desenhos
+	funcao desenhos_carregamento_de_arquivos(cadeia texto, inteiro porcentagem){
+		desenhar_texto_carregamento_de_arquivos(texto)
+		desenhar_barra_de_carregamento_de_arquivos(porcentagem)
+		g.renderizar()
+	}
 	funcao desenhar_texto_carregamento_de_arquivos(cadeia texto){
+		g.definir_cor(janela_cor_preto)
+		g.limpar()
 		g.definir_cor(janela_cor_cinza)
 		centralizar_texto(alt / 2, "CARREGANDO ARQUIVOS")
 		centralizar_texto(alt / 2 + (2 * g.altura_texto("A")), "Carregando: " + texto)
-		g.renderizar()
+	}
+	funcao desenhar_barra_de_carregamento_de_arquivos(inteiro porcentagem){
+		// Regra de 3 simples para converter o valor de % para px.
+		inteiro x = ((lar - 400) * porcentagem) / 100
+		
+		g.definir_cor(janela_cor_cinza)
+		g.desenhar_retangulo(200, (alt / 2 + alt / 4) - 5, lar - 400, 10, verdadeiro, falso)
+		g.desenhar_retangulo(200, (alt / 2 + alt / 4) - 5, x, 10, falso, verdadeiro)
 	}
 	funcao desenhar_interface(){
 		// Desenha o retângulo de fundo
@@ -245,21 +260,23 @@ programa{
 	funcao desenhar_jogador(){
 		// Desenha o jogador
 		se(jogador_virado_para_a_direita){
-			g.desenhar_porcao_imagem(jogador_posicao[0], jogador_posicao[1],
-			0, 0, jogador_tamanho[0], jogador_tamanho[1], jogador_sprite)
+			g.desenhar_porcao_imagem(posicao_jogador[0], posicao_jogador[1],
+			0, 0, tamanho_jogador[0], tamanho_jogador[1], jogador_sprite)
 		}
 		senao{
-			g.desenhar_porcao_imagem(jogador_posicao[0], jogador_posicao[1],
-			jogador_tamanho[0], 0, jogador_tamanho[0], jogador_tamanho[1], jogador_sprite)
+			g.desenhar_porcao_imagem(posicao_jogador[0], posicao_jogador[1],
+			tamanho_jogador[0], 0, tamanho_jogador[0], tamanho_jogador[1], jogador_sprite)
 		}
 	}
 	funcao desenhar_ponto(){
 		// Desenha o ponto
-		g.desenhar_imagem(ponto_posicao[0], ponto_posicao[1], ponto_sprite)
+		g.desenhar_imagem(posicao_ponto[0], posicao_ponto[1], ponto_sprite)
 	}
 	
 	// Funções referentes às telas
 	funcao customizacao_de_personagem(){
+		m.exibir_cursor()
+		
 		g.definir_cor(janela_cor_cinza)
 		g.definir_tamanho_texto(20.0)
 		centralizar_texto((alt / 4) / 4, lang_json("customizacao_de_personagem_customizacao_de_personagem"))
@@ -329,6 +346,8 @@ programa{
 		detectar_se_jogador_selecionou_botao_customizacao_de_personagem()
 	}
 	funcao configuracoes(){
+		m.exibir_cursor()
+		
 		g.definir_cor(janela_cor_cinza)
 		g.definir_tamanho_texto(20.0)
 		centralizar_texto((alt / 4) / 4, lang_json("menu_configuracoes"))
@@ -436,6 +455,8 @@ programa{
 		executando = falso
 	}
 	funcao menu(){
+		m.exibir_cursor()
+		
 		g.definir_tamanho_texto(12.0)
 		
 		// Define a cor do texto dos botôes
@@ -463,6 +484,8 @@ programa{
 		detectar_se_jogador_selecionou_botao_menu()
 	}
 	funcao jogo(){
+		m.ocultar_cursor()
+		
 		// Inicia o tutorial, caso ainda não tenha sido iniciado
 		se(exibir_tutorial){
 			tutorial()
@@ -480,7 +503,7 @@ programa{
 				
 			// Funções referentes a movimentação
 			movimento_jogador()
-			detectar_colisao_com_a_janela()
+			detectar_colisao_com_a_janela(verdadeiro)
 			
 			// Funções referentes a desenhos
 			desenhar_fase()
@@ -498,6 +521,7 @@ programa{
 		
 		desenhar_jogador()
 		movimento_jogador()
+		detectar_colisao_com_a_janela(falso)
 		
 		desenhar_imagens_tutorial()
 	}
@@ -657,12 +681,20 @@ programa{
 		g.desenhar_retangulo(lar / 2 + 11 + (20 * 3) + (5 * 3), y, 20, 20, falso, verdadeiro)
 	}
 	
-	// Funções referentes ao ponto
+	// Funções referentes aos pontos
 	funcao sortear_posicao_ponto(){
 		// Sorteia uma nova possição para o ponto
-		inteiro sorteio_x = sorteia(0, lar - ponto_tamanho), sorteio_y = sorteia(25, alt - ponto_tamanho)
-		ponto_posicao[0] = sorteio_x
-		ponto_posicao[1] = sorteio_y
+		inteiro sorteio_x = sorteia(0, lar - tamanho_ponto), sorteio_y = sorteia(25, alt - tamanho_ponto)
+		posicao_ponto[0] = sorteio_x
+		posicao_ponto[1] = sorteio_y
+	}
+	funcao aumentar_pontuacao(inteiro quantidade_de_pontos){
+		pontuacao += quantidade_de_pontos
+		tocar_som_ponto_coletado()
+
+		se(pontuacao > 999){
+			pontuacao = 0
+		}
 	}
 
 	// Funções referentes à movimentação
@@ -675,17 +707,17 @@ programa{
 		}
 		// Detecta se o jogador pressionou uma tecla
 		se(t.tecla_pressionada(t.TECLA_W) ou t.tecla_pressionada(t.TECLA_SETA_ACIMA)){
-			jogador_posicao[1] -= jogador_velocidade
+			posicao_jogador[1] -= jogador_velocidade
 		}
 		se(t.tecla_pressionada(t.TECLA_A)  ou t.tecla_pressionada(t.TECLA_SETA_ESQUERDA)){
-			jogador_posicao[0] -= jogador_velocidade
+			posicao_jogador[0] -= jogador_velocidade
 			jogador_virado_para_a_direita = falso
 		}
 		se(t.tecla_pressionada(t.TECLA_S) ou t.tecla_pressionada(t.TECLA_SETA_ABAIXO)){
-			jogador_posicao[1] += jogador_velocidade
+			posicao_jogador[1] += jogador_velocidade
 		}
 		se(t.tecla_pressionada(t.TECLA_D) ou t.tecla_pressionada(t.TECLA_SETA_DIREITA)){
-			jogador_posicao[0] += jogador_velocidade
+			posicao_jogador[0] += jogador_velocidade
 			jogador_virado_para_a_direita = verdadeiro
 		}
 	}
@@ -705,8 +737,8 @@ programa{
 		
 		se(t.tecla_pressionada(t.TECLA_ESC) e (tela_atual == CUSTOMIZACAO_DE_PERSONAGEM ou tela_atual == JOGO)){
 			pontuacao = 0
-			jogador_posicao[0] = (lar / 2) - (jogador_tamanho[0] / 2)
-			jogador_posicao[1] = (alt / 2) - (jogador_tamanho[1] / 2)
+			posicao_jogador[0] = (lar / 2) - (tamanho_jogador[0] / 2)
+			posicao_jogador[1] = (alt / 2) - (tamanho_jogador[1] / 2)
 			jogador_virado_para_a_direita = verdadeiro
 			sortear_nova_posicao_ponto = verdadeiro
 			contador_tempo_obter_tempo = verdadeiro
@@ -751,8 +783,8 @@ programa{
 	}
 	funcao inicio_de_jogo(){
 		pontuacao = 0
-		jogador_posicao[0] = (lar / 2) - (jogador_tamanho[0] / 2)
-		jogador_posicao[1] = (alt / 2) - (jogador_tamanho[1] / 2)
+		posicao_jogador[0] = (lar / 2) - (tamanho_jogador[0] / 2)
+		posicao_jogador[1] = (alt / 2) - (tamanho_jogador[1] / 2)
 		jogador_virado_para_a_direita = verdadeiro
 		sortear_nova_posicao_ponto = verdadeiro
 		contador_tempo_obter_tempo = verdadeiro
@@ -961,52 +993,47 @@ programa{
 		}
 	}
 	funcao detectar_se_jogador_pegou_ponto(){
-		// Variáveis que serão usadas para detectar se o jogador está realmente em cima do ponto
-		logico x = falso, y = falso
+		logico colisao_x = falso,
+		colisao_y = falso
 		
-		// Detecta se o jogador está em cima do ponto
-		para(inteiro c = ponto_posicao[0]; c < ponto_posicao[0] + ponto_tamanho; c++){
-			para(inteiro d = jogador_posicao[0]; d < jogador_posicao[0] + jogador_tamanho[0]; d++){
-				se(d == c){
-					x = verdadeiro
-				}
-			}
+		se((posicao_ponto[0] > posicao_jogador[0] e posicao_ponto[0] < posicao_jogador[0] + tamanho_jogador[0]) ou
+		(posicao_ponto[0] + tamanho_ponto > posicao_jogador[0] e posicao_ponto[0] + tamanho_ponto < posicao_jogador[0] + tamanho_jogador[0])){
+			colisao_x = verdadeiro
 		}
-		para(inteiro c = ponto_posicao[1]; c < ponto_posicao[1] + ponto_tamanho; c++){
-			para(inteiro d = jogador_posicao[1]; d < jogador_posicao[1] + jogador_tamanho[1]; d++){
-				se(d == c){
-					y = verdadeiro
-				}
-			}
+		se((posicao_ponto[1] > posicao_jogador[1] e posicao_ponto[1] < posicao_jogador[1] + tamanho_jogador[1]) ou
+		(posicao_ponto[1] + tamanho_ponto > posicao_jogador[1] e posicao_ponto[1] + tamanho_ponto < posicao_jogador[1] + tamanho_jogador[1])){
+			colisao_y = verdadeiro
 		}
-		
-		// Caso o jogador esteja em cima do ponto, a pontuação aumenta e uma nova posição do ponto é sorteada
-		se(x e y){
-			pontuacao++
-			
-			tocar_som_ponto_coletado()
-			
-			// Reseta a pontuação do jogador quando ele atinge um valor maior que 999 pontos
-			se(pontuacao > 999){
-				pontuacao = 0
-			}
-			
+
+		se(colisao_x e colisao_y){
+			aumentar_pontuacao(1)
 			sortear_nova_posicao_ponto = verdadeiro
 		}
 	}
-	funcao detectar_colisao_com_a_janela(){
+	funcao detectar_colisao_com_a_janela(logico considerar_interface){
 		// Detecta se o jogador saiu para fora da janela e o coloca novamente na janela
-		se(jogador_posicao[1] < 25){
-			jogador_posicao[1] += jogador_velocidade
+		se(considerar_interface){
+			se(posicao_jogador[1] < 25){
+				posicao_jogador[1] += jogador_velocidade
+			}
 		}
-		se(jogador_posicao[1] > alt - jogador_tamanho[1]){
-			jogador_posicao[1] -= jogador_velocidade
+		
+		senao{
+			se(posicao_jogador[1] < 0){
+				posicao_jogador[1] += jogador_velocidade
+			}
 		}
-		se(jogador_posicao[0] < 0){
-			jogador_posicao[0] += jogador_velocidade
+		
+		se(posicao_jogador[1] > alt - tamanho_jogador[1]){
+			posicao_jogador[1] -= jogador_velocidade
 		}
-		se(jogador_posicao[0] > lar - jogador_tamanho[0]){
-			jogador_posicao[0] -= jogador_velocidade
+		
+		se(posicao_jogador[0] < 0){
+			posicao_jogador[0] += jogador_velocidade
+		}
+		
+		se(posicao_jogador[0] > lar - tamanho_jogador[0]){
+			posicao_jogador[0] -= jogador_velocidade
 		}
 	}
 
@@ -1029,7 +1056,7 @@ programa{
 			s.reproduzir_som(som_button_click, falso)
 		}
 	}
-	
+
 	// Funções referentes à interface
 	funcao cadeia interface_obter_tempo(){		
 		// Obtem um tempo para servir de base na primeira vez que a função é executada
@@ -1076,13 +1103,15 @@ programa{
 
 	// Funções referentes à carregar arquivos
 	funcao carregar_todos_os_arquivos(){
-		desenhar_texto_carregamento_de_arquivos("Fontes")
+		inteiro tipos_de_arquivos_para_carregar = 4
+		
+		desenhos_carregamento_de_arquivos("Fontes", (100 / tipos_de_arquivos_para_carregar) * 1)
 		carregar_fontes()
-		desenhar_texto_carregamento_de_arquivos("Sons")
+		desenhos_carregamento_de_arquivos("Sons", (100 / tipos_de_arquivos_para_carregar) * 2)
 		carregar_sons()
-		desenhar_texto_carregamento_de_arquivos("Arquivos")
+		desenhos_carregamento_de_arquivos("Arquivos", (100 / tipos_de_arquivos_para_carregar) * 3)
 		carregar_arquivos()
-		desenhar_texto_carregamento_de_arquivos("Imagens")
+		desenhos_carregamento_de_arquivos("Imagens", (100 / tipos_de_arquivos_para_carregar) * 4)
 		carregar_imagens()
 	}
 	funcao carregar_arquivos(){
@@ -1176,6 +1205,7 @@ programa{
 		som_button_click = s.carregar_som(pasta_sons + "/sfx/button_click.mp3")
 		som_point_collected1 = s.carregar_som(pasta_sons + "/sfx/point_collected1.mp3")
 		som_point_collected2 = s.carregar_som(pasta_sons + "/sfx/point_collected2.mp3")
+		som_boss_fight = s.carregar_som(pasta_sons + "/boss_fight.mp3")
 		console("Sons: sons carregados.")
 	}
 
