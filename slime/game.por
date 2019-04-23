@@ -93,8 +93,7 @@ programa{
 	// Sons
 	inteiro som_button_click = 0,
 	som_point_collected1 = 0,
-	som_point_collected2 = 0,
-	som_boss_fight = 0
+	som_point_collected2 = 0
 
 	// Jogador
 	cadeia jogador_cor = "verde"
@@ -1205,7 +1204,6 @@ programa{
 		som_button_click = s.carregar_som(pasta_sons + "/sfx/button_click.mp3")
 		som_point_collected1 = s.carregar_som(pasta_sons + "/sfx/point_collected1.mp3")
 		som_point_collected2 = s.carregar_som(pasta_sons + "/sfx/point_collected2.mp3")
-		som_boss_fight = s.carregar_som(pasta_sons + "/boss_fight.mp3")
 		console("Sons: sons carregados.")
 	}
 
